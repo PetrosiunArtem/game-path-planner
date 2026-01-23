@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Dark Theme from Design Folder */
+    --background: 222 47% 11%;
+    /* #0f172a - Slate 900 adjusted to #0e1117 approx */
+    --foreground: 210 40% 98%;
+    /* #f8fafc */
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 199 100% 50%;
+    /* #00d4ff */
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;
+    /* #1e293b */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    /* #94a3b8 */
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 20%;
+    /* #334155 approx - matches border colors in design */
+    --input: 217 33% 17%;
+    --ring: 199 100% 50%;
+    /* #00d4ff */
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply bg-[#0e1117] text-[#e4e6eb];
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0e1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2d36;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3d46;
+}

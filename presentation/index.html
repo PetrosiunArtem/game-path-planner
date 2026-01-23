@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Progress Path Planner — MVP презентация</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Reveal.js -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/theme/white.css" id="theme">
+  <!-- Code highlight -->
+  <link rel="stylesheet" href="https://unpkg.com/highlight.js@11.9.0/styles/github.min.css">
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="MVP: персональный планировщик прогресса для Cuphead. Маршруты к целям, оценка времени и рекомендации лоадаута с учетом навыков игрока." />
+
+  <style>
+    .screenshot {
+      max-width: 1000px;
+      width: 90%;
+      height: auto;
+      display: block;
+      margin: 0.6rem auto;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(2,6,23,0.6);
+    }
+    .slide-img-caption {
+      text-align: center;
+      color: #9ad1ff;
+      margin-top: 0.6rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- 1. Титул -->
+    <section data-background-color="#0b132b" data-background-gradient="radial-gradient(#0b132b, #1c2541)">
+      <h1 style="color:#fff">Progress Path Planner</h1>
+    </section>
+
+    <!-- 2. Проблема -->
+    <section>
+      <h2>Проблема</h2>
+      <!-- <h3>Какую проблему решаем?</h3> -->
+      <ul>
+        <li>Гайды по играм не персонализированы: не учитывают ваши навыки, оружие, текущий прогресс</li>
+        <li>Игроку сложно понять, сколько времени займёт цель и какой порядок шагов даст лучший шанс.</li>
+      </ul>
+    </section>
+
+    <!-- 3. Цель проекта -->
+    <section>
+      <h2>Цель проекта</h2>
+      <div>Создать персональный планировщик прогресса для игр, который помогает игроку достигать конкретных целей с прогнозом времени и количества попыток.</div>
+    </section>
+
+    <!-- 4. Функциональные требования -->
+    <section>
+      <h2>Функциональные требования</h2>
+      <ul>
+        <li>Ввод профиля</li>
+        <br>
+        <li>Обновление прогресса вручную</li>
+        <br>
+        <li>Получение двух альтернативных маршрутов для конкретной цели</li>
+      </ul>
+    </section>
+
+    <!-- API -->
+    <section>
+      <h2>Обзор</h2>
+      <img class="screenshot" src="images/menu.jpg" alt="Обзор: дашборд, быстрый старт и статистика">
+    </section>
+
+    <!-- Пример запроса/ответа -->
+    <section>
+      <h2>Профиль игрока (оружие)</h2>
+      <img class="screenshot" src="images/profile.jpg" alt="Список доступного оружия в профиле игрока">
+    </section>
+
+    <!-- Данные и модель времени -->
+    <section>
+      <h2>Построить маршрут</h2>
+      <img class="screenshot" src="images/find_path.jpg" alt="Выбор цели и кнопка построения маршрутов">
+    </section>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/reveal.js@5/dist/reveal.js"></script>
+<script src="https://unpkg.com/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    controls: true,
+    progress: true,
+    center: true,
+    transition: 'fade',
+    plugins: [ RevealHighlight ],
+    pdfSeparateFragments: false
+  });
+</script>
+</body>
+</html>
