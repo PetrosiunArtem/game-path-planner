@@ -48,10 +48,11 @@ export const Layout: React.FC = () => {
                   <li key={item.path}>
                     <Link
                       to={item.path}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded transition-colors ${isActive(item.path)
-                        ? 'bg-[#00d4ff]/10 text-[#00d4ff]'
-                        : 'text-[#e4e6eb] hover:bg-[#2a2d36]'
-                        }`}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded transition-colors ${
+                        isActive(item.path)
+                          ? 'bg-[#00d4ff]/10 text-[#00d4ff]'
+                          : 'text-[#e4e6eb] hover:bg-[#2a2d36]'
+                      }`}
                     >
                       <item.icon className="w-5 h-5" />
                       <span>{item.name}</span>

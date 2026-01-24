@@ -1,11 +1,19 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { fetchProfile, toggleWeapon, updateSkillLevel, toggleBoss, cycleLevelStatus } from '../features/profile/profileSlice';
+import {
+  fetchProfile,
+  toggleWeapon,
+  updateSkillLevel,
+  toggleBoss,
+  cycleLevelStatus,
+} from '../features/profile/profileSlice';
 import { Sword, Shield, Skull, Map, Check } from 'lucide-react';
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
-  const { weapons, skills, bosses, levels, status, error } = useAppSelector((state) => state.profile);
+  const { weapons, skills, bosses, levels, status, error } = useAppSelector(
+    (state) => state.profile
+  );
 
   useEffect(() => {
     if (status === 'idle') {
@@ -42,23 +50,31 @@ export default function ProfilePage() {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {weapons.map(weapon => (
+            {weapons.map((weapon) => (
               <div
                 key={weapon.id}
-                className={`flex items-center justify-between p-4 rounded-lg border transition-colors cursor-pointer ${weapon.owned
+                className={`flex items-center justify-between p-4 rounded-lg border transition-colors cursor-pointer ${
+                  weapon.owned
                     ? 'bg-[#00d4ff]/5 border-[#00d4ff]/30'
                     : 'bg-[#0e1117] border-[#2a2d36] opacity-60'
-                  }`}
+                }`}
                 onClick={() => dispatch(toggleWeapon(weapon.id))}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${weapon.owned ? 'bg-[#00d4ff]/10' : 'bg-[#2a2d36]'
-                    }`}>
-                    <Sword className={`w-5 h-5 ${weapon.owned ? 'text-[#00d4ff]' : 'text-[#a0a3ab]'}`} />
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      weapon.owned ? 'bg-[#00d4ff]/10' : 'bg-[#2a2d36]'
+                    }`}
+                  >
+                    <Sword
+                      className={`w-5 h-5 ${weapon.owned ? 'text-[#00d4ff]' : 'text-[#a0a3ab]'}`}
+                    />
                   </div>
                   <div>
                     <div className="text-[#e4e6eb]">{weapon.name}</div>
-                    <div className="text-sm text-[#a0a3ab]">{weapon.type} • Damage: {weapon.damage}</div>
+                    <div className="text-sm text-[#a0a3ab]">
+                      {weapon.type} • Damage: {weapon.damage}
+                    </div>
                   </div>
                 </div>
                 {weapon.owned && (
@@ -82,12 +98,14 @@ export default function ProfilePage() {
         </div>
         <div className="p-6">
           <div className="space-y-4">
-            {skills.map(skill => (
+            {skills.map((skill) => (
               <div key={skill.id} className="bg-[#0e1117] border border-[#2a2d36] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <div className="text-[#e4e6eb]">{skill.name}</div>
-                    <div className="text-sm text-[#a0a3ab]">Level {skill.level}/{skill.maxLevel}</div>
+                    <div className="text-sm text-[#a0a3ab]">
+                      Level {skill.level}/{skill.maxLevel}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -128,23 +146,31 @@ export default function ProfilePage() {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {bosses.map(boss => (
+            {bosses.map((boss) => (
               <div
                 key={boss.id}
-                className={`flex items-center justify-between p-4 rounded-lg border transition-colors cursor-pointer ${boss.defeated
+                className={`flex items-center justify-between p-4 rounded-lg border transition-colors cursor-pointer ${
+                  boss.defeated
                     ? 'bg-[#51cf66]/5 border-[#51cf66]/30'
                     : 'bg-[#0e1117] border-[#2a2d36]'
-                  }`}
+                }`}
                 onClick={() => dispatch(toggleBoss(boss.id))}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${boss.defeated ? 'bg-[#51cf66]/10' : 'bg-[#ff6b6b]/10'
-                    }`}>
-                    <Skull className={`w-5 h-5 ${boss.defeated ? 'text-[#51cf66]' : 'text-[#ff6b6b]'}`} />
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      boss.defeated ? 'bg-[#51cf66]/10' : 'bg-[#ff6b6b]/10'
+                    }`}
+                  >
+                    <Skull
+                      className={`w-5 h-5 ${boss.defeated ? 'text-[#51cf66]' : 'text-[#ff6b6b]'}`}
+                    />
                   </div>
                   <div>
                     <div className="text-[#e4e6eb]">{boss.name}</div>
-                    <div className={`text-sm ${difficultyColors[boss.difficulty]}`}>{boss.difficulty}</div>
+                    <div className={`text-sm ${difficultyColors[boss.difficulty]}`}>
+                      {boss.difficulty}
+                    </div>
                   </div>
                 </div>
                 {boss.defeated && (
@@ -168,30 +194,30 @@ export default function ProfilePage() {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {levels.map(level => (
+            {levels.map((level) => (
               <div
                 key={level.id}
-                className={`p-4 rounded-lg border transition-colors cursor-pointer ${level.status === 'completed'
+                className={`p-4 rounded-lg border transition-colors cursor-pointer ${
+                  level.status === 'completed'
                     ? 'bg-[#51cf66]/5 border-[#51cf66]/30'
                     : level.status === 'available'
                       ? 'bg-[#ffd43b]/5 border-[#ffd43b]/30'
                       : 'bg-[#0e1117] border-[#2a2d36] opacity-60'
-                  }`}
+                }`}
                 onClick={() => dispatch(cycleLevelStatus(level.id))}
               >
                 <div className="text-[#e4e6eb] mb-2">{level.name}</div>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${level.status === 'completed'
+                    className={`w-2 h-2 rounded-full ${
+                      level.status === 'completed'
                         ? 'bg-[#51cf66]'
                         : level.status === 'available'
                           ? 'bg-[#ffd43b]'
                           : 'bg-[#a0a3ab]'
-                      }`}
+                    }`}
                   />
-                  <span className="text-sm text-[#a0a3ab] capitalize">
-                    {level.status}
-                  </span>
+                  <span className="text-sm text-[#a0a3ab] capitalize">{level.status}</span>
                 </div>
               </div>
             ))}

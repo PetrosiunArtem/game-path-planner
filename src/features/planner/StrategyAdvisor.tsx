@@ -25,15 +25,19 @@ export const StrategyAdvisor: React.FC<StrategyAdvisorProps> = ({ advice, label,
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-foreground">AI Strategy Rating:</span>
-                <span className={`text-sm font-bold uppercase tracking-wider ${
-                  score > 0.7 ? 'text-green-400' : score > 0.4 ? 'text-yellow-400' : 'text-red-400'
-                }`}>
+                <span
+                  className={`text-sm font-bold uppercase tracking-wider ${
+                    score > 0.7
+                      ? 'text-green-400'
+                      : score > 0.4
+                        ? 'text-yellow-400'
+                        : 'text-red-400'
+                  }`}
+                >
                   {label}
                 </span>
               </div>
-              <p className="text-secondary text-sm italic leading-relaxed">
-                "{advice}"
-              </p>
+              <p className="text-secondary text-sm italic leading-relaxed">"{advice}"</p>
             </div>
           </div>
 
@@ -46,4 +50,3 @@ export const StrategyAdvisor: React.FC<StrategyAdvisorProps> = ({ advice, label,
     </motion.div>
   );
 };
-

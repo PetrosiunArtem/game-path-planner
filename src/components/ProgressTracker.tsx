@@ -27,7 +27,7 @@ export const ProgressTracker: React.FC = () => {
       id: '2',
       type: 'weapon',
       title: 'Purchased Spread Shot',
-      description: 'Acquired from Porkrind\'s Emporium',
+      description: "Acquired from Porkrind's Emporium",
       date: '2025-11-28',
       completed: true,
     },
@@ -50,13 +50,12 @@ export const ProgressTracker: React.FC = () => {
   ]);
 
   const toggleItem = (id: string) => {
-    setProgressItems(progressItems.map(item =>
-      item.id === id ? { ...item, completed: !item.completed } : item
-    ));
+    setProgressItems(
+      progressItems.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item))
+    );
   };
 
-
-  const completedCount = progressItems.filter(item => item.completed).length;
+  const completedCount = progressItems.filter((item) => item.completed).length;
   const completionRate = Math.round((completedCount / progressItems.length) * 100);
 
   return (
@@ -66,11 +65,17 @@ export const ProgressTracker: React.FC = () => {
           { label: 'Total Tracked', value: progressItems.length, color: 'text-foreground' },
           { label: 'Completed', value: completedCount, color: 'text-green-400' },
           { label: 'Completion Rate', value: `${completionRate}%`, color: 'text-primary' },
-          { label: 'Pending', value: progressItems.length - completedCount, color: 'text-yellow-400' },
+          {
+            label: 'Pending',
+            value: progressItems.length - completedCount,
+            color: 'text-yellow-400',
+          },
         ].map((s, i) => (
           <Card key={i} className="bg-card/40 border-border/50 p-6 rounded-2xl">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">{s.label}</div>
-            <div className={cn("text-3xl font-mono font-bold", s.color)}>{s.value}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              {s.label}
+            </div>
+            <div className={cn('text-3xl font-mono font-bold', s.color)}>{s.value}</div>
           </Card>
         ))}
       </div>
@@ -80,7 +85,11 @@ export const ProgressTracker: React.FC = () => {
           <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-3">
             <Calendar className="w-4 h-4 text-primary" /> Operational log
           </h3>
-          <Button size="sm" variant="outline" className="rounded-full border-border hover:bg-primary hover:text-white transition-all">
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full border-border hover:bg-primary hover:text-white transition-all"
+          >
             <Plus className="w-4 h-4 mr-2" /> Log Entry
           </Button>
         </div>
@@ -95,27 +104,36 @@ export const ProgressTracker: React.FC = () => {
             >
               <div
                 className={cn(
-                  "group relative p-5 rounded-2xl border transition-all cursor-pointer",
+                  'group relative p-5 rounded-2xl border transition-all cursor-pointer',
                   item.completed
-                    ? "bg-accent/5 border-border/20 opacity-60"
-                    : "bg-card border-border/60 hover:border-primary/40 shadow-sm"
+                    ? 'bg-accent/5 border-border/20 opacity-60'
+                    : 'bg-card border-border/60 hover:border-primary/40 shadow-sm'
                 )}
                 onClick={() => toggleItem(item.id)}
               >
                 <div className="flex items-center gap-6">
-                  <div className={cn(
-                    "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                    item.completed
-                      ? "bg-primary border-primary text-white"
-                      : "border-border group-hover:border-primary/50"
-                  )}>
+                  <div
+                    className={cn(
+                      'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all',
+                      item.completed
+                        ? 'bg-primary border-primary text-white'
+                        : 'border-border group-hover:border-primary/50'
+                    )}
+                  >
                     {item.completed && <CheckCircle2 className="w-4 h-4" />}
                   </div>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono font-bold uppercase py-0.5 px-2 rounded bg-accent/20 text-muted-foreground border border-border/50">{item.type}</span>
-                      <h4 className={cn("text-sm font-bold tracking-tight", item.completed ? "text-muted-foreground line-through" : "text-foreground")}>
+                      <span className="text-[10px] font-mono font-bold uppercase py-0.5 px-2 rounded bg-accent/20 text-muted-foreground border border-border/50">
+                        {item.type}
+                      </span>
+                      <h4
+                        className={cn(
+                          'text-sm font-bold tracking-tight',
+                          item.completed ? 'text-muted-foreground line-through' : 'text-foreground'
+                        )}
+                      >
                         {item.title}
                       </h4>
                     </div>
@@ -135,4 +153,4 @@ export const ProgressTracker: React.FC = () => {
 };
 
 // Helper for cn in case it is needed locally but it is already imported from @/lib/utils
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';

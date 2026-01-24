@@ -37,16 +37,24 @@ export const LoadoutList: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  if (status === 'loading') return <div className="text-primary text-center py-10 animate-pulse">Loading arsenal data...</div>;
+  if (status === 'loading')
+    return (
+      <div className="text-primary text-center py-10 animate-pulse">Loading arsenal data...</div>
+    );
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       <div className="flex justify-between items-center px-4">
         <div>
-            <h2 className="text-2xl font-bold text-foreground">Wallop Equipment</h2>
-            <p className="text-sm text-muted-foreground mt-1 font-medium">Configure your contracts and weaponry for Inkwell Isle.</p>
+          <h2 className="text-2xl font-bold text-foreground">Wallop Equipment</h2>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">
+            Configure your contracts and weaponry for Inkwell Isle.
+          </p>
         </div>
-        <Button onClick={handleCreate} className="rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
+        <Button
+          onClick={handleCreate}
+          className="rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Contract
         </Button>
@@ -65,37 +73,47 @@ export const LoadoutList: React.FC = () => {
               <Card className="bg-card/40 backdrop-blur-sm border-border hover:border-primary/40 transition-all duration-300 h-full flex flex-col group overflow-hidden">
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                          {loadout.name}
-                      </CardTitle>
-                      <Badge variant="outline" className="font-mono text-[10px] opacity-50">#{loadout.id.slice(0, 4)}</Badge>
+                    <CardTitle className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                      {loadout.name}
+                    </CardTitle>
+                    <Badge variant="outline" className="font-mono text-[10px] opacity-50">
+                      #{loadout.id.slice(0, 4)}
+                    </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-2 flex-1">
                   <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 rounded-xl bg-accent/20 border border-border/50">
-                          <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-2">Shot Configuration</div>
-                          <div className="text-xs font-semibold flex items-center gap-1.5 truncate">
-                              <Crosshair className="w-3 h-3 text-primary shrink-0" /> {loadout.weaponPrimary}
-                          </div>
-                          <div className="text-xs font-semibold flex items-center gap-1.5 mt-1 truncate">
-                              <Crosshair className="w-3 h-3 text-primary shrink-0" /> {loadout.weaponSecondary}
-                          </div>
+                    <div className="p-3 rounded-xl bg-accent/20 border border-border/50">
+                      <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-2">
+                        Shot Configuration
                       </div>
-                      <div className="space-y-3">
-                          <div className="p-2 px-3 rounded-lg bg-accent/20 border border-border/50">
-                              <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Charm</div>
-                              <div className="text-xs font-semibold flex items-center gap-1.5">
-                                  <Shield className="w-3 h-3 text-indigo-400" /> {loadout.charm}
-                              </div>
-                          </div>
-                          <div className="p-2 px-3 rounded-lg bg-accent/20 border border-border/50">
-                              <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Super Art</div>
-                              <div className="text-xs font-semibold flex items-center gap-1.5">
-                                  <Zap className="w-3 h-3 text-yellow-400" /> {loadout.superMove}
-                              </div>
-                          </div>
+                      <div className="text-xs font-semibold flex items-center gap-1.5 truncate">
+                        <Crosshair className="w-3 h-3 text-primary shrink-0" />{' '}
+                        {loadout.weaponPrimary}
                       </div>
+                      <div className="text-xs font-semibold flex items-center gap-1.5 mt-1 truncate">
+                        <Crosshair className="w-3 h-3 text-primary shrink-0" />{' '}
+                        {loadout.weaponSecondary}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="p-2 px-3 rounded-lg bg-accent/20 border border-border/50">
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                          Charm
+                        </div>
+                        <div className="text-xs font-semibold flex items-center gap-1.5">
+                          <Shield className="w-3 h-3 text-indigo-400" /> {loadout.charm}
+                        </div>
+                      </div>
+                      <div className="p-2 px-3 rounded-lg bg-accent/20 border border-border/50">
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                          Super Art
+                        </div>
+                        <div className="text-xs font-semibold flex items-center gap-1.5">
+                          <Zap className="w-3 h-3 text-yellow-400" /> {loadout.superMove}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter className="border-t border-border/40 flex justify-end gap-2 p-4 bg-accent/5">

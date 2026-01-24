@@ -36,3 +36,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Project specific documentation and design files
+design/
+presentation/

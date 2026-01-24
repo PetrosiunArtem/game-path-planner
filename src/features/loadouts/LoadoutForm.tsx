@@ -41,7 +41,7 @@ const CHARMS = ['Smoke Bomb', 'P. Sugar', 'Coffee', 'Heart', 'Twin Heart', 'Whet
 const SUPERS = ['Energy Beam', 'Invincibility', 'Giant Ghost'];
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
+  name: z.string().min(2, 'Name must be at least 2 characters.'),
   weaponPrimary: z.string(),
   weaponSecondary: z.string(),
   charm: z.string(),
@@ -89,7 +89,11 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
                 <FormItem>
                   <FormLabel className="font-display text-lg uppercase">Label</FormLabel>
                   <FormControl>
-                    <Input placeholder="SLAYER..." {...field} className="bg-background border-2 border-border font-bold uppercase" />
+                    <Input
+                      placeholder="SLAYER..."
+                      {...field}
+                      className="bg-background border-2 border-border font-bold uppercase"
+                    />
                   </FormControl>
                   <FormMessage className="text-primary font-bold italic" />
                 </FormItem>
@@ -110,7 +114,15 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-card border-2 border-border">
-                        {WEAPONS.map(w => <SelectItem key={w} value={w} className="font-bold uppercase focus:bg-primary focus:text-white">{w}</SelectItem>)}
+                        {WEAPONS.map((w) => (
+                          <SelectItem
+                            key={w}
+                            value={w}
+                            className="font-bold uppercase focus:bg-primary focus:text-white"
+                          >
+                            {w}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -130,7 +142,15 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-card border-2 border-border">
-                        {WEAPONS.map(w => <SelectItem key={w} value={w} className="font-bold uppercase focus:bg-primary focus:text-white">{w}</SelectItem>)}
+                        {WEAPONS.map((w) => (
+                          <SelectItem
+                            key={w}
+                            value={w}
+                            className="font-bold uppercase focus:bg-primary focus:text-white"
+                          >
+                            {w}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -151,7 +171,15 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-card border-2 border-border">
-                      {CHARMS.map(c => <SelectItem key={c} value={c} className="font-bold uppercase focus:bg-primary focus:text-white">{c}</SelectItem>)}
+                      {CHARMS.map((c) => (
+                        <SelectItem
+                          key={c}
+                          value={c}
+                          className="font-bold uppercase focus:bg-primary focus:text-white"
+                        >
+                          {c}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -171,7 +199,15 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-card border-2 border-border">
-                      {SUPERS.map(s => <SelectItem key={s} value={s} className="font-bold uppercase focus:bg-primary focus:text-white">{s}</SelectItem>)}
+                      {SUPERS.map((s) => (
+                        <SelectItem
+                          key={s}
+                          value={s}
+                          className="font-bold uppercase focus:bg-primary focus:text-white"
+                        >
+                          {s}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -179,8 +215,20 @@ export const LoadoutForm: React.FC<LoadoutFormProps> = ({ existingLoadout, onClo
             />
 
             <DialogFooter className="pt-6 border-t-2 border-border gap-2">
-              <Button type="button" variant="outline" onClick={onClose} className="border-2 border-border font-display uppercase hover:bg-muted">Cease!</Button>
-              <Button type="submit" className="bg-primary hover:bg-primary/90 text-white border-2 border-border font-display uppercase shadow-md px-8 text-lg">Sign!</Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="border-2 border-border font-display uppercase hover:bg-muted"
+              >
+                Cease!
+              </Button>
+              <Button
+                type="submit"
+                className="bg-primary hover:bg-primary/90 text-white border-2 border-border font-display uppercase shadow-md px-8 text-lg"
+              >
+                Sign!
+              </Button>
             </DialogFooter>
           </form>
         </Form>

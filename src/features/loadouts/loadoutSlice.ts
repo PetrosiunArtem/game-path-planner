@@ -14,13 +14,10 @@ const initialState: LoadoutState = {
 };
 
 // Async Thunks
-export const fetchLoadouts = createAsyncThunk(
-  'loadouts/fetchLoadouts',
-  async () => {
-    const response = await api.getLoadouts();
-    return response;
-  }
-);
+export const fetchLoadouts = createAsyncThunk('loadouts/fetchLoadouts', async () => {
+  const response = await api.getLoadouts();
+  return response;
+});
 
 export const addLoadout = createAsyncThunk(
   'loadouts/addLoadout',
@@ -30,21 +27,15 @@ export const addLoadout = createAsyncThunk(
   }
 );
 
-export const editLoadout = createAsyncThunk(
-  'loadouts/editLoadout',
-  async (loadout: Loadout) => {
-    const response = await api.updateLoadout(loadout);
-    return response;
-  }
-);
+export const editLoadout = createAsyncThunk('loadouts/editLoadout', async (loadout: Loadout) => {
+  const response = await api.updateLoadout(loadout);
+  return response;
+});
 
-export const removeLoadout = createAsyncThunk(
-  'loadouts/removeLoadout',
-  async (id: string) => {
-    await api.deleteLoadout(id);
-    return id;
-  }
-);
+export const removeLoadout = createAsyncThunk('loadouts/removeLoadout', async (id: string) => {
+  await api.deleteLoadout(id);
+  return id;
+});
 
 export const loadoutSlice = createSlice({
   name: 'loadouts',
@@ -70,17 +61,16 @@ export const loadoutSlice = createSlice({
       })
       // Edit
       .addCase(editLoadout.fulfilled, (state, action) => {
-        const index = state.items.findIndex(item => item.id === action.payload.id);
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
       })
       // Remove
       .addCase(removeLoadout.fulfilled, (state, action) => {
-        state.items = state.items.filter(item => item.id !== action.payload);
+        state.items = state.items.filter((item) => item.id !== action.payload);
       });
   },
 });
 
 export default loadoutSlice.reducer;
-

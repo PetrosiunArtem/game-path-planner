@@ -1,4 +1,3 @@
-
 import { configureStore } from '@reduxjs/toolkit';
 import { api } from '../../api/mockApi';
 import profileReducer, {
@@ -6,7 +5,7 @@ import profileReducer, {
     toggleWeapon,
     updateSkillLevel,
     toggleBoss,
-    cycleLevelStatus
+    cycleLevelStatus,
 } from './profileSlice';
 
 // Mock the API
@@ -14,34 +13,27 @@ jest.mock('../../api/mockApi', () => ({
     api: {
         getProfile: jest.fn(),
         updateProfile: jest.fn(),
-    }
+    },
 }));
 
 const mockProfile = {
     weapons: [
         { id: '1', name: 'Peashooter', type: 'Standard', damage: 45, owned: true },
-        { id: '2', name: 'Spread', type: 'Short Range', damage: 62, owned: false }
+        { id: '2', name: 'Spread', type: 'Short Range', damage: 62, owned: false },
     ],
-    skills: [
-        { id: '1', name: 'Accuracy', level: 5, maxLevel: 10 }
-    ],
-    bosses: [
-        { id: '1', name: 'The Root Pack', defeated: false, difficulty: 'Easy' as const }
-    ],
-    levels: [
-        { id: '1', name: 'Forest Follies', status: 'locked' as const }
-    ]
+    skills: [{ id: '1', name: 'Accuracy', level: 5, maxLevel: 10 }],
+    bosses: [{ id: '1', name: 'The Root Pack', defeated: false, difficulty: 'Easy' as const }],
+    levels: [{ id: '1', name: 'Forest Follies', status: 'locked' as const }],
 };
 
 describe('profileSlice Async Thunks', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let store: any;
+    let store: ReturnType<typeof configureStore>;
 
     beforeEach(() => {
         store = configureStore({
             reducer: {
-                profile: profileReducer
-            }
+                profile: profileReducer,
+            },
         });
         jest.clearAllMocks();
     });
@@ -66,8 +58,8 @@ describe('profileSlice Async Thunks', () => {
             ...mockProfile,
             weapons: [
                 { id: '1', name: 'Peashooter', type: 'Standard', damage: 45, owned: true },
-                { id: '2', name: 'Spread', type: 'Short Range', damage: 62, owned: true } // Toggled to true
-            ]
+                { id: '2', name: 'Spread', type: 'Short Range', damage: 62, owned: true }, // Toggled to true
+            ],
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
@@ -84,7 +76,7 @@ describe('profileSlice Async Thunks', () => {
 
         const updatedProfile = {
             ...mockProfile,
-            skills: [{ id: '1', name: 'Accuracy', level: 6, maxLevel: 10 }]
+            skills: [{ id: '1', name: 'Accuracy', level: 6, maxLevel: 10 }],
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
@@ -100,7 +92,7 @@ describe('profileSlice Async Thunks', () => {
 
         const updatedProfile = {
             ...mockProfile,
-            bosses: [{ id: '1', name: 'The Root Pack', defeated: true, difficulty: 'Easy' as const }]
+            bosses: [{ id: '1', name: 'The Root Pack', defeated: true, difficulty: 'Easy' as const }],
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
@@ -116,7 +108,7 @@ describe('profileSlice Async Thunks', () => {
 
         const updatedProfile = {
             ...mockProfile,
-            levels: [{ id: '1', name: 'Forest Follies', status: 'available' as const }]
+            levels: [{ id: '1', name: 'Forest Follies', status: 'available' as const }],
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 

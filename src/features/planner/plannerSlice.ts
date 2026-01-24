@@ -27,7 +27,7 @@ export const plannerSlice = createSlice({
   reducers: {
     clearResult: (state) => {
       state.currentResult = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -48,4 +48,3 @@ export const plannerSlice = createSlice({
 export const { clearResult } = plannerSlice.actions;
 
 export default plannerSlice.reducer;
-

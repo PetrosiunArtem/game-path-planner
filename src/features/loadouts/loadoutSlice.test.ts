@@ -21,12 +21,12 @@ describe('loadout reducer', () => {
 
   it('should handle adding a loadout (fulfilled)', () => {
     const newLoadout: Loadout = {
-        id: '123',
-        name: 'Test Loadout',
-        weaponPrimary: 'P',
-        weaponSecondary: 'S',
-        charm: 'C',
-        superMove: 'SM'
+      id: '123',
+      name: 'Test Loadout',
+      weaponPrimary: 'P',
+      weaponSecondary: 'S',
+      charm: 'C',
+      superMove: 'SM',
     };
 
     // Manually invoking the fulfilled action type that Redux Toolkit generates
@@ -37,4 +37,3 @@ describe('loadout reducer', () => {
     expect(state.items[0]).toEqual(newLoadout);
   });
 });
-

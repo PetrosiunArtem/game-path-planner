@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 // Types
@@ -104,7 +103,7 @@ const INITIAL_PROFILE: ProfileData = {
     { id: '4', name: 'Funhouse Frazzle', status: 'available' },
     { id: '5', name: 'Rugged Ridge', status: 'locked' },
     { id: '6', name: 'Perilous Piers', status: 'locked' },
-  ]
+  ],
 };
 
 // Mock Delay Helper
@@ -138,14 +137,14 @@ const saveProfileToStorage = (profile: ProfileData) => {
 };
 
 // Synergies and boss data for "AI" Advisor
-const BOSS_DATA: Record<string, { weaknesses: string[], tips: string[] }> = {
+const BOSS_DATA: Record<string, { weaknesses: string[]; tips: string[] }> = {
   'The Root Pack': {
     weaknesses: ['Peashooter', 'Spread'],
-    tips: ['Stay in the center for the potato', 'Use Spread for the onion', 'Parry the tears']
+    tips: ['Stay in the center for the potato', 'Use Spread for the onion', 'Parry the tears'],
   },
   'Goopy Le Grande': {
     weaknesses: ['Spread', 'Chaser'],
-    tips: ['Duck when he punches', 'Keep moving in phase 2', 'Stay under the tombstone']
+    tips: ['Duck when he punches', 'Keep moving in phase 2', 'Stay under the tombstone'],
   },
   // Add more as needed
 };
@@ -154,7 +153,7 @@ const STRATEGY_TIERS = [
   { threshold: 0.9, label: 'S-Rank Strategy', color: 'text-yellow-400' },
   { threshold: 0.7, label: 'Solid Plan', color: 'text-green-400' },
   { threshold: 0.4, label: 'Risky Setup', color: 'text-orange-400' },
-  { threshold: 0, label: 'Underprepared', color: 'text-red-400' }
+  { threshold: 0, label: 'Underprepared', color: 'text-red-400' },
 ];
 
 // API Service
@@ -211,15 +210,19 @@ export const api = {
     await delay(600);
 
     const loadouts = getLoadoutsFromStorage();
-    const usedLoadout = loadouts.find(l => l.id === loadoutId);
-    const bossInfo = BOSS_DATA[bossName] || { weaknesses: [], tips: ['Stay focused!', 'Watch attack patterns.'] };
+    const usedLoadout = loadouts.find((l) => l.id === loadoutId);
+    const bossInfo = BOSS_DATA[bossName] || {
+      weaknesses: [],
+      tips: ['Stay focused!', 'Watch attack patterns.'],
+    };
 
     let score = 0.5; // Base score
     let timeModifier = 1.0;
 
     if (usedLoadout) {
       // Calculate synergy
-      const hasWeakness = bossInfo.weaknesses.includes(usedLoadout.weaponPrimary) ||
+      const hasWeakness =
+        bossInfo.weaknesses.includes(usedLoadout.weaponPrimary) ||
         bossInfo.weaknesses.includes(usedLoadout.weaponSecondary);
 
       if (hasWeakness) score += 0.3;
@@ -230,7 +233,7 @@ export const api = {
     }
 
     const efficiencyScore = Math.min(1, score);
-    const tier = STRATEGY_TIERS.find(t => efficiencyScore >= t.threshold) || STRATEGY_TIERS[3];
+    const tier = STRATEGY_TIERS.find((t) => efficiencyScore >= t.threshold) || STRATEGY_TIERS[3];
     const attempts = Math.max(1, Math.round(10 * (1.1 - efficiencyScore)));
 
     return {
@@ -242,9 +245,10 @@ export const api = {
       steps: bossInfo.tips,
       efficiencyScore: efficiencyScore,
       strategyLabel: tier.label,
-      aiAdvice: efficiencyScore > 0.8
-        ? "Your loadout is perfectly suited for this encounter. Aggressive play is recommended."
-        : "Consider switching to weapons with higher spread or homing for this boss."
+      aiAdvice:
+        efficiencyScore > 0.8
+          ? 'Your loadout is perfectly suited for this encounter. Aggressive play is recommended.'
+          : 'Consider switching to weapons with higher spread or homing for this boss.',
     };
-  }
+  },
 };

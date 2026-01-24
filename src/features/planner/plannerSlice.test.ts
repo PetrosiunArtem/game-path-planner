@@ -17,7 +17,7 @@ describe('planner reducer', () => {
     steps: ['Step 1'],
     efficiencyScore: 0.8,
     strategyLabel: 'Solid',
-    aiAdvice: 'Good luck'
+    aiAdvice: 'Good luck',
   };
 
   it('should handle initial state', () => {
@@ -45,4 +45,3 @@ describe('planner reducer', () => {
     expect(state.history[0]).toEqual(mockResult);
   });
 });
-
