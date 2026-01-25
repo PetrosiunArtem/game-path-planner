@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 // Types
 export interface Loadout {
   id: string;
@@ -58,197 +56,71 @@ export interface ProfileData {
   levels: Level[];
 }
 
-// Initial Data
-const INITIAL_LOADOUTS: Loadout[] = [
-  {
-    id: '1',
-    name: 'Standard Peashooter',
-    weaponPrimary: 'Peashooter',
-    weaponSecondary: 'Spread',
-    charm: 'Smoke Bomb',
-    superMove: 'Energy Beam',
-  },
-];
-
-const INITIAL_PROFILE: ProfileData = {
-  weapons: [
-    { id: '1', name: 'Peashooter', type: 'Standard', damage: 45, owned: true },
-    { id: '2', name: 'Spread', type: 'Short Range', damage: 62, owned: false },
-    { id: '3', name: 'Chaser', type: 'Homing', damage: 30, owned: false },
-    { id: '4', name: 'Lobber', type: 'Medium Range', damage: 55, owned: false },
-    { id: '5', name: 'Charge', type: 'Charge Shot', damage: 85, owned: false },
-    { id: '6', name: 'Roundabout', type: 'Long Range', damage: 48, owned: false },
-  ],
-  skills: [
-    { id: '1', name: 'Accuracy', level: 5, maxLevel: 10 },
-    { id: '2', name: 'Parry Skill', level: 3, maxLevel: 10 },
-    { id: '3', name: 'Survival', level: 7, maxLevel: 10 },
-    { id: '4', name: 'Movement', level: 4, maxLevel: 10 },
-    { id: '5', name: 'Pattern Recognition', level: 2, maxLevel: 10 },
-  ],
-  bosses: [
-    { id: '1', name: 'The Root Pack', defeated: true, difficulty: 'Easy' },
-    { id: '2', name: 'Goopy Le Grande', defeated: true, difficulty: 'Easy' },
-    { id: '3', name: 'Hilda Berg', defeated: false, difficulty: 'Medium' },
-    { id: '4', name: 'Cagney Carnation', defeated: false, difficulty: 'Medium' },
-    { id: '5', name: 'Baroness Von Bon Bon', defeated: false, difficulty: 'Hard' },
-    { id: '6', name: 'Grim Matchstick', defeated: false, difficulty: 'Hard' },
-    { id: '7', name: 'King Dice', defeated: false, difficulty: 'Extreme' },
-    { id: '8', name: 'The Devil', defeated: false, difficulty: 'Extreme' },
-  ],
-  levels: [
-    { id: '1', name: 'Forest Follies', status: 'completed' },
-    { id: '2', name: 'Treetop Trouble', status: 'completed' },
-    { id: '3', name: 'Funfair Fever', status: 'available' },
-    { id: '4', name: 'Funhouse Frazzle', status: 'available' },
-    { id: '5', name: 'Rugged Ridge', status: 'locked' },
-    { id: '6', name: 'Perilous Piers', status: 'locked' },
-  ],
-};
-
-// Mock Delay Helper
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// LocalStorage Helper
-const getLoadoutsFromStorage = (): Loadout[] => {
-  const data = localStorage.getItem('ppp_loadouts');
-  if (!data) {
-    localStorage.setItem('ppp_loadouts', JSON.stringify(INITIAL_LOADOUTS));
-    return INITIAL_LOADOUTS;
-  }
-  return JSON.parse(data);
-};
-
-const saveLoadoutsToStorage = (loadouts: Loadout[]) => {
-  localStorage.setItem('ppp_loadouts', JSON.stringify(loadouts));
-};
-
-const getProfileFromStorage = (): ProfileData => {
-  const data = localStorage.getItem('ppp_profile');
-  if (!data) {
-    localStorage.setItem('ppp_profile', JSON.stringify(INITIAL_PROFILE));
-    return INITIAL_PROFILE;
-  }
-  return JSON.parse(data);
-};
-
-const saveProfileToStorage = (profile: ProfileData) => {
-  localStorage.setItem('ppp_profile', JSON.stringify(profile));
-};
-
-// Synergies and boss data for "AI" Advisor
-const BOSS_DATA: Record<string, { weaknesses: string[]; tips: string[] }> = {
-  'The Root Pack': {
-    weaknesses: ['Peashooter', 'Spread'],
-    tips: ['Stay in the center for the potato', 'Use Spread for the onion', 'Parry the tears'],
-  },
-  'Goopy Le Grande': {
-    weaknesses: ['Spread', 'Chaser'],
-    tips: ['Duck when he punches', 'Keep moving in phase 2', 'Stay under the tombstone'],
-  },
-  // Add more as needed
-};
-
-const STRATEGY_TIERS = [
-  { threshold: 0.9, label: 'S-Rank Strategy', color: 'text-yellow-400' },
-  { threshold: 0.7, label: 'Solid Plan', color: 'text-green-400' },
-  { threshold: 0.4, label: 'Risky Setup', color: 'text-orange-400' },
-  { threshold: 0, label: 'Underprepared', color: 'text-red-400' },
-];
+const API_BASE_URL = 'http://localhost:3000/api';
 
 // API Service
 export const api = {
   // Loadouts CRUD
   async getLoadouts(): Promise<Loadout[]> {
-    await delay(300); // Reduced delay
-    return getLoadoutsFromStorage();
+    const response = await fetch(`${API_BASE_URL}/loadouts`);
+    if (!response.ok) throw new Error('Failed to fetch loadouts');
+    return response.json();
   },
 
   async createLoadout(loadout: Omit<Loadout, 'id'>): Promise<Loadout> {
-    await delay(300);
-    const newLoadout = { ...loadout, id: uuidv4() };
-    const loadouts = getLoadoutsFromStorage();
-    loadouts.push(newLoadout);
-    saveLoadoutsToStorage(loadouts);
-    return newLoadout;
+    const response = await fetch(`${API_BASE_URL}/loadouts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loadout),
+    });
+    if (!response.ok) throw new Error('Failed to create loadout');
+    return response.json();
   },
 
   async updateLoadout(loadout: Loadout): Promise<Loadout> {
-    await delay(300);
-    const loadouts = getLoadoutsFromStorage();
-    const index = loadouts.findIndex((l) => l.id === loadout.id);
-    if (index !== -1) {
-      loadouts[index] = loadout;
-      saveLoadoutsToStorage(loadouts);
-      return loadout;
-    }
-    throw new Error('Loadout not found');
+    const response = await fetch(`${API_BASE_URL}/loadouts/${loadout.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loadout),
+    });
+    if (!response.ok) throw new Error('Failed to update loadout');
+    return response.json();
   },
 
   async deleteLoadout(id: string): Promise<string> {
-    await delay(300);
-    const loadouts = getLoadoutsFromStorage();
-    const filtered = loadouts.filter((l) => l.id !== id);
-    saveLoadoutsToStorage(filtered);
-    return id;
+    const response = await fetch(`${API_BASE_URL}/loadouts/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete loadout');
+    const result = await response.json();
+    return result.id;
   },
 
   // Profile CRUD
   async getProfile(): Promise<ProfileData> {
-    await delay(300);
-    return getProfileFromStorage();
+    const response = await fetch(`${API_BASE_URL}/profile`);
+    if (!response.ok) throw new Error('Failed to fetch profile');
+    return response.json();
   },
 
   async updateProfile(profile: ProfileData): Promise<ProfileData> {
-    await delay(300);
-    saveProfileToStorage(profile);
+    const response = await fetch(`${API_BASE_URL}/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile),
+    });
+    if (!response.ok) throw new Error('Failed to update profile');
     return profile;
   },
 
-  // Planner Logic (Mock AI)
+  // Planner Logic (Moved to backend)
   async calculatePath(bossName: string, loadoutId: string): Promise<PathResult> {
-    await delay(600);
-
-    const loadouts = getLoadoutsFromStorage();
-    const usedLoadout = loadouts.find((l) => l.id === loadoutId);
-    const bossInfo = BOSS_DATA[bossName] || {
-      weaknesses: [],
-      tips: ['Stay focused!', 'Watch attack patterns.'],
-    };
-
-    let score = 0.5; // Base score
-    let timeModifier = 1.0;
-
-    if (usedLoadout) {
-      // Calculate synergy
-      const hasWeakness =
-        bossInfo.weaknesses.includes(usedLoadout.weaponPrimary) ||
-        bossInfo.weaknesses.includes(usedLoadout.weaponSecondary);
-
-      if (hasWeakness) score += 0.3;
-      if (usedLoadout.charm === 'Smoke Bomb') score += 0.1;
-
-      // Specific weapon logic
-      if (usedLoadout.weaponPrimary === 'Charge') timeModifier -= 0.2;
-    }
-
-    const efficiencyScore = Math.min(1, score);
-    const tier = STRATEGY_TIERS.find((t) => efficiencyScore >= t.threshold) || STRATEGY_TIERS[3];
-    const attempts = Math.max(1, Math.round(10 * (1.1 - efficiencyScore)));
-
-    return {
-      id: uuidv4(),
-      goalName: `Defeat ${bossName}`,
-      estimatedTimeMinutes: Math.round(25 * timeModifier),
-      attemptsEstimation: attempts,
-      recommendedLoadoutId: loadoutId,
-      steps: bossInfo.tips,
-      efficiencyScore: efficiencyScore,
-      strategyLabel: tier.label,
-      aiAdvice:
-        efficiencyScore > 0.8
-          ? 'Your loadout is perfectly suited for this encounter. Aggressive play is recommended.'
-          : 'Consider switching to weapons with higher spread or homing for this boss.',
-    };
+    const response = await fetch(`${API_BASE_URL}/calculate-path`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bossName, loadoutId }),
+    });
+    if (!response.ok) throw new Error('Failed to calculate path');
+    return response.json();
   },
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { calculateBossPath } from './plannerSlice';
 import { fetchLoadouts } from '../loadouts/loadoutSlice';
+import { fetchProfile } from '../profile/profileSlice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,32 +17,30 @@ import { Clock, Target } from 'lucide-react';
 import { StrategyAdvisor } from './StrategyAdvisor';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const BOSSES = [
-  'The Root Pack',
-  'Goopy Le Grande',
-  'Ribby and Croaks',
-  'Hilda Berg',
-  'Cagney Carnation',
-  'Baroness Von Bon Bon',
-  'Beppi The Clown',
-  'Djimmi The Great',
-  'Grim Matchstick',
-  'Wally Warbles',
-];
 
 export const PathPlanner: React.FC = () => {
   const dispatch = useAppDispatch();
   const plannerState = useAppSelector((state) => state.planner);
   const loadoutsState = useAppSelector((state) => state.loadouts);
+  const profileState = useAppSelector((state) => state.profile);
 
-  const [selectedBoss, setSelectedBoss] = useState(BOSSES[0]);
+  const [selectedBoss, setSelectedBoss] = useState('');
   const [selectedLoadoutId, setSelectedLoadoutId] = useState('');
 
   useEffect(() => {
     if (loadoutsState.status === 'idle') {
       dispatch(fetchLoadouts());
     }
-  }, [dispatch, loadoutsState.status]);
+    if (profileState.status === 'idle') {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, loadoutsState.status, profileState.status]);
+
+  useEffect(() => {
+    if (profileState.bosses.length > 0 && !selectedBoss) {
+      setSelectedBoss(profileState.bosses[0].name);
+    }
+  }, [profileState.bosses, selectedBoss]);
 
   // Select first loadout by default if available
   useEffect(() => {
@@ -56,9 +55,19 @@ export const PathPlanner: React.FC = () => {
     }
   };
 
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Easy': return 'bg-green-500/10 text-green-400 border-green-500/20';
+      case 'Medium': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+      case 'Hard': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+      case 'Extreme': return 'bg-red-500/10 text-red-400 border-red-500/20';
+      default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-1000">
-      <Card className="bg-card/50 backdrop-blur-xl border-border shadow-xl rounded-3xl overflow-hidden">
+      <Card className="bg-card/50 backdrop-blur-xl border-border shadow-xl rounded-3xl">
         <div className="bg-gradient-to-r from-primary/10 via-transparent to-transparent p-8 border-b border-border/50">
           <CardTitle className="text-2xl font-bold tracking-tight">
             Contract Analysis Board
@@ -68,45 +77,78 @@ export const PathPlanner: React.FC = () => {
           </CardDescription>
         </div>
         <CardContent className="p-8 space-y-8">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-10">
             <div className="space-y-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-primary/80 ml-1">
                 Target Debtor
               </label>
               <Select value={selectedBoss} onValueChange={setSelectedBoss}>
-                <SelectTrigger className="bg-background/50 border-border h-12 rounded-xl focus:ring-primary/20 transition-all">
-                  <SelectValue placeholder="Identify Boss" />
+                <SelectTrigger className="bg-background border-border h-16 rounded-2xl focus:ring-primary/20 transition-all px-5 shadow-inner">
+                  <div className="flex flex-col items-start gap-0.5">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Target Selected</span>
+                    <SelectValue placeholder="Identify Boss" />
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border rounded-xl">
-                  {BOSSES.map((b) => (
-                    <SelectItem
-                      key={b}
-                      value={b}
-                      className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors"
-                    >
-                      {b}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="bg-[#1a1d26] border-border/50 rounded-2xl max-h-80 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100]">
+                  {profileState.bosses.length > 0 ? (
+                    profileState.bosses.map((boss) => (
+                      <SelectItem
+                        key={boss.id}
+                        value={boss.name}
+                        className="rounded-xl focus:bg-primary/10 focus:text-primary transition-all py-4 px-4 my-1 mx-1 border border-transparent focus:border-primary/20"
+                      >
+                        <div className="flex items-center justify-between w-full gap-8">
+                          <span className="font-bold text-base">{boss.name}</span>
+                          <Badge
+                            variant="outline"
+                            className={`text-[9px] uppercase font-black px-2.5 py-0.5 border-2 ${getDifficultyColor(boss.difficulty)}`}
+                          >
+                            {boss.difficulty}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-8 text-center flex flex-col items-center gap-3">
+                      <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                      <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Gathering Intel...</span>
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-primary/80 ml-1">
                 Combat Loadout
               </label>
               <Select value={selectedLoadoutId} onValueChange={setSelectedLoadoutId}>
-                <SelectTrigger className="bg-background/50 border-border h-12 rounded-xl focus:ring-primary/20 transition-all">
-                  <SelectValue placeholder="Resource Selection" />
+                <SelectTrigger className="bg-background border-border h-16 rounded-2xl focus:ring-primary/20 transition-all px-5 shadow-inner text-left">
+                  <div className="flex flex-col items-start gap-0.5 overflow-hidden">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider text-left">Active Loadout</span>
+                    <div className="truncate w-full font-bold">
+                      {loadoutsState.items.find(l => l.id === selectedLoadoutId)?.name || 'Resource Selection'}
+                    </div>
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border rounded-xl">
+                <SelectContent className="bg-[#1a1d26] border-border/50 rounded-2xl max-h-80 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100]">
                   {loadoutsState.items.map((l) => (
                     <SelectItem
                       key={l.id}
                       value={l.id}
-                      className="rounded-lg focus:bg-primary/10 focus:text-primary transition-colors"
+                      className="rounded-xl focus:bg-primary/10 focus:text-primary transition-all py-3 px-4 my-1 mx-1 border border-transparent focus:border-primary/20"
                     >
-                      {l.name}
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-black text-base tracking-tight">{l.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold uppercase">
+                            {l.weaponPrimary}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground/80 font-bold uppercase tracking-tighter">
+                            {l.charm}
+                          </span>
+                        </div>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -144,15 +186,7 @@ export const PathPlanner: React.FC = () => {
             <Card className="bg-card/30 backdrop-blur-md border-border/60 shadow-2xl rounded-3xl overflow-hidden">
               <CardHeader className="border-b border-border/40 p-8 pb-6 bg-accent/5">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Badge className="bg-green-500/10 text-green-400 border-green-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-tighter">
-                        Live Intelligence
-                      </Badge>
-                      <span className="text-[10px] font-mono text-muted-foreground uppercase">
-                        {new Date().toISOString()}
-                      </span>
-                    </div>
+                  <div className="pt-2">
                     <CardTitle className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                       {plannerState.currentResult.goalName}
                     </CardTitle>
