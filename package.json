@@ -11,7 +11,8 @@
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "server": "tsx watch server/index.ts",
-    "start": "tsx server/index.ts"
+    "start": "tsx server/index.ts",
+    "init-db": "tsx server/scripts/init_db.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

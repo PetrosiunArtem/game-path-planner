@@ -4,7 +4,7 @@ meta:
     name: npm
     version: 20
 build:
-  additionalCommands: npm run build
+  additionalCommands: npm run build && npm run init-db
 run:
   command: npm run start
   containerPort: 3000
