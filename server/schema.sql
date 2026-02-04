@@ -1,15 +1,7 @@
 -- Database Schema for Game Path Planner
 
--- Drop tables if they exist (for clean setup)
-DROP TABLE IF EXISTS loadouts;
-DROP TABLE IF EXISTS weapons;
-DROP TABLE IF EXISTS skills;
-DROP TABLE IF EXISTS bosses;
-DROP TABLE IF EXISTS levels;
-DROP TABLE IF EXISTS logs;
-
 -- Loadouts
-CREATE TABLE loadouts (
+CREATE TABLE IF NOT EXISTS loadouts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     weapon_primary TEXT,
@@ -19,7 +11,7 @@ CREATE TABLE loadouts (
 );
 
 -- Weapons
-CREATE TABLE weapons (
+CREATE TABLE IF NOT EXISTS weapons (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     type TEXT,
@@ -29,7 +21,7 @@ CREATE TABLE weapons (
 );
 
 -- Skills
-CREATE TABLE skills (
+CREATE TABLE IF NOT EXISTS skills (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     level INTEGER,
@@ -38,7 +30,7 @@ CREATE TABLE skills (
 );
 
 -- Bosses
-CREATE TABLE bosses (
+CREATE TABLE IF NOT EXISTS bosses (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     defeated BOOLEAN DEFAULT false,
@@ -46,7 +38,7 @@ CREATE TABLE bosses (
 );
 
 -- Levels
-CREATE TABLE levels (
+CREATE TABLE IF NOT EXISTS levels (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     status TEXT,
@@ -55,7 +47,7 @@ CREATE TABLE levels (
 );
 
 -- Operational Logs
-CREATE TABLE logs (
+CREATE TABLE IF NOT EXISTS logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type TEXT NOT NULL,
     title TEXT NOT NULL,

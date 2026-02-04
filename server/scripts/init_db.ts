@@ -9,6 +9,18 @@ const __dirname = path.dirname(__filename);
 async function init() {
     console.log('Starting Database Initialization...');
     try {
+        // Check if database is already initialized
+        const checkResult = await pool.query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'weapons')");
+        const exists = checkResult.rows[0].exists;
+
+        if (exists) {
+            const dataCheck = await pool.query("SELECT count(*) FROM weapons");
+            if (parseInt(dataCheck.rows[0].count) > 0) {
+                console.log('Database already initialized. Skipping schema execution.');
+                return;
+            }
+        }
+
         // 1. Read and execute schema.sql
         const schemaPath = path.join(__dirname, '../schema.sql');
         const schema = fs.readFileSync(schemaPath, 'utf8');
