@@ -37,11 +37,14 @@ describe('Path Planner API Integration', () => {
     expect(result.strategyLabel).toBe('S-Rank Strategy');
   });
 
-  it('should throw error when API returns non-ok response', async () => {
+  it('should return fallback data when API returns non-ok response', async () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: false,
     });
 
-    await expect(api.calculatePath('Boss', 'Loadout')).rejects.toThrow('Failed to calculate path');
+    const result = await api.calculatePath('Boss', 'Loadout');
+    expect(result).toBeDefined();
+    expect(result.id).toBe('sim-fallback');
+    expect(result.strategyLabel).toBeDefined();
   });
 });

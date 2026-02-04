@@ -47,7 +47,9 @@ CREATE TABLE bosses (
 CREATE TABLE levels (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    status TEXT
+    status TEXT,
+    coins_collected INTEGER DEFAULT 0,
+    total_coins INTEGER DEFAULT 5
 );
 
 -- Operational Logs
@@ -89,13 +91,13 @@ INSERT INTO bosses (id, name, defeated, difficulty) VALUES
 ('7', 'King Dice', false, 'Extreme'),
 ('8', 'The Devil', false, 'Extreme');
 
-INSERT INTO levels (id, name, status) VALUES
-('1', 'Forest Follies', 'completed'),
-('2', 'Treetop Trouble', 'completed'),
-('3', 'Funfair Fever', 'available'),
-('4', 'Funhouse Frazzle', 'available'),
-('5', 'Rugged Ridge', 'locked'),
-('6', 'Perilous Piers', 'locked');
+INSERT INTO levels (id, name, status, coins_collected, total_coins) VALUES
+('1', 'Forest Follies', 'completed', 5, 5),
+('2', 'Treetop Trouble', 'completed', 3, 5),
+('3', 'Funfair Fever', 'available', 0, 5),
+('4', 'Funhouse Frazzle', 'available', 0, 5),
+('5', 'Rugged Ridge', 'locked', 0, 5),
+('6', 'Perilous Piers', 'locked', 0, 5);
 
 INSERT INTO logs (type, title, description, date, completed) VALUES
 ('level', 'Completed "Forest Follies" Run & Gun', 'Collected all 5 gold coins', '2025-12-01', true),

@@ -59,6 +59,8 @@ export interface Level {
   id: string;
   name: string;
   status: 'locked' | 'available' | 'completed';
+  coinsCollected: number;
+  totalCoins: number;
 }
 
 export interface ProfileData {
@@ -89,8 +91,8 @@ const fallbackProfile: ProfileData = {
     { id: 'b4', name: 'Cagney Carnation', defeated: false, difficulty: 'Medium' },
   ],
   levels: [
-    { id: 'l1', name: 'Inkwell Isle I', status: 'available' },
-    { id: 'l2', name: 'Inkwell Isle II', status: 'locked' },
+    { id: 'l1', name: 'Inkwell Isle I', status: 'available', coinsCollected: 0, totalCoins: 5 },
+    { id: 'l2', name: 'Inkwell Isle II', status: 'locked', coinsCollected: 0, totalCoins: 5 },
   ],
 };
 

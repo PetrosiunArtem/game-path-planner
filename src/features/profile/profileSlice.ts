@@ -19,15 +19,37 @@ const initialState: ProfileState = {
 
 // Async Thunks
 export const fetchProfile = createAsyncThunk('profile/fetchProfile', async () => {
-  const response = await api.getProfile();
-  return response;
+  return await api.getProfile();
 });
 
 export const updateProfileData = createAsyncThunk(
   'profile/updateProfile',
   async (profile: ProfileData) => {
-    const response = await api.updateProfile(profile);
-    return response;
+    return await api.updateProfile(profile);
+  }
+);
+
+export const updateLevelCoins = createAsyncThunk(
+  'profile/updateLevelCoins',
+  async ({ id, delta }: { id: string; delta: number }, { getState }) => {
+    const state = getState() as { profile: ProfileState };
+    const profile = state.profile;
+
+    const newLevels = profile.levels.map((l) => {
+      if (l.id === id) {
+        const newCoins = Math.max(0, Math.min(l.totalCoins, (l.coinsCollected || 0) + delta));
+        return { ...l, coinsCollected: newCoins };
+      }
+      return l;
+    });
+
+    const newProfile: ProfileData = {
+      weapons: profile.weapons,
+      skills: profile.skills,
+      bosses: profile.bosses,
+      levels: newLevels,
+    };
+    return await api.updateProfile(newProfile);
   }
 );
 
@@ -57,6 +79,13 @@ const profileSlice = createSlice({
         const statuses: Level['status'][] = ['locked', 'available', 'completed'];
         const idx = statuses.indexOf(level.status);
         level.status = statuses[(idx + 1) % statuses.length];
+      }
+    },
+    localUpdateLevelCoins: (state, action: PayloadAction<{ id: string; delta: number }>) => {
+      const level = state.levels.find((l) => l.id === action.payload.id);
+      if (level) {
+        const newCoins = level.coinsCollected + action.payload.delta;
+        level.coinsCollected = Math.max(0, Math.min(level.totalCoins, newCoins));
       }
     },
   },
@@ -94,6 +123,7 @@ const profileSlice = createSlice({
             updateSkillLevel.fulfilled.type,
             toggleBoss.fulfilled.type,
             cycleLevelStatus.fulfilled.type,
+            updateLevelCoins.fulfilled.type,
           ].includes(action.type),
         (state, action: PayloadAction<ProfileData>) => {
           state.status = 'succeeded';
@@ -193,5 +223,5 @@ export const cycleLevelStatus = createAsyncThunk(
   }
 );
 
-export const { localToggleWeapon } = profileSlice.actions;
+export const { localToggleWeapon, localUpdateLevelCoins } = profileSlice.actions;
 export default profileSlice.reducer;

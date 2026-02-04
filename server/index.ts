@@ -1,9 +1,11 @@
+// noinspection SqlNoDataSourceInspection
+// noinspection JSUnresolvedImport
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import pool from './db';
+import pool from './db.js';
 import { v4 as uuidv4 } from 'uuid';
-import { calculateCombatPath } from './plannerLogic';
+import { calculateCombatPath } from './plannerLogic.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -72,9 +74,13 @@ app.get('/api/profile', async (_req, res) => {
 
         res.json({
             weapons: weapons.rows,
-            skills: skills.rows.map(s => ({ ...s, maxLevel: s.max_level })),
+            skills: skills.rows.map((s: any) => ({ ...s, maxLevel: s.max_level })),
             bosses: bosses.rows,
-            levels: levels.rows,
+            levels: levels.rows.map((l: any) => ({
+                ...l,
+                coinsCollected: l.coins_collected,
+                totalCoins: l.total_coins
+            })),
         });
     } catch (err) {
         console.error('Error fetching profile:', err);
@@ -105,7 +111,10 @@ app.put('/api/profile', async (req, res) => {
         }
         if (levels) {
             for (const l of levels) {
-                await client.query('UPDATE levels SET status = $1 WHERE id = $2', [l.status, l.id]);
+                await client.query(
+                    'UPDATE levels SET status = $1, coins_collected = $2, total_coins = $3 WHERE id = $4',
+                    [l.status, l.coinsCollected || 0, l.totalCoins || 5, l.id]
+                );
             }
         }
 
@@ -195,6 +204,12 @@ app.post('/api/calculate-path', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+// Export app for testing
+export { app };
+
+// Only listen if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}

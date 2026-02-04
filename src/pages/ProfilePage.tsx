@@ -6,8 +6,9 @@ import {
   updateSkillLevel,
   toggleBoss,
   cycleLevelStatus,
+  updateLevelCoins,
 } from '../features/profile/profileSlice';
-import { Sword, Shield, Skull, Map, Check } from 'lucide-react';
+import { Sword, Shield, Skull, Map, Check, Coins } from 'lucide-react';
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -212,6 +213,34 @@ export default function ProfilePage() {
                       }`}
                   />
                   <span className="text-sm text-[#a0a3ab] capitalize">{level.status}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-[#2a2d36]">
+                  <div className="flex items-center gap-2 text-xs text-[#ffd43b]">
+                    <Coins className="w-3.5 h-3.5" />
+                    <span>
+                      {level.coinsCollected || 0}/{level.totalCoins || 5} Coins
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(updateLevelCoins({ id: level.id, delta: -1 }));
+                      }}
+                      className="w-6 h-6 bg-[#2a2d36] hover:bg-[#3a3d46] rounded flex items-center justify-center transition-colors text-xs text-[#e4e6eb]"
+                    >
+                      -
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(updateLevelCoins({ id: level.id, delta: 1 }));
+                      }}
+                      className="w-6 h-6 bg-[#2a2d36] hover:bg-[#3a3d46] rounded flex items-center justify-center transition-colors text-xs text-[#e4e6eb]"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
