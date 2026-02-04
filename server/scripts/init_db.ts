@@ -10,7 +10,7 @@ async function init() {
     console.log('Starting Database Initialization...');
     try {
         // 1. Read and execute schema.sql
-        const schemaPath = path.join(__dirname, '../../schema.sql');
+        const schemaPath = path.join(__dirname, '../schema.sql');
         const schema = fs.readFileSync(schemaPath, 'utf8');
 
         console.log('Executing schema.sql...');
