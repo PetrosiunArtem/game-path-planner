@@ -26,6 +26,8 @@ export const PathPlanner: React.FC = () => {
 
   const [selectedBoss, setSelectedBoss] = useState('');
   const [selectedLoadoutId, setSelectedLoadoutId] = useState('');
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simLog, setSimLog] = useState<string[]>([]);
 
   useEffect(() => {
     if (loadoutsState.status === 'idle') {
@@ -49,9 +51,27 @@ export const PathPlanner: React.FC = () => {
     }
   }, [loadoutsState.items, selectedLoadoutId]);
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     if (selectedBoss && selectedLoadoutId) {
-      dispatch(calculateBossPath({ bossName: selectedBoss, loadoutId: selectedLoadoutId }));
+      setIsSimulating(true);
+      setSimLog(['Establishing link to tactical database...', 'Synchronizing with local player profile...']);
+
+      const action = await dispatch(calculateBossPath({ bossName: selectedBoss, loadoutId: selectedLoadoutId }));
+
+      if (calculateBossPath.fulfilled.match(action)) {
+        const result = action.payload;
+
+        // Show the real theoretical steps from the backend simulation
+        if (result.simulationTranscript) {
+          for (const step of result.simulationTranscript) {
+            await new Promise(resolve => setTimeout(resolve, 600));
+            setSimLog(prev => [...prev, step]);
+          }
+        }
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setIsSimulating(false);
     }
   };
 
@@ -158,20 +178,43 @@ export const PathPlanner: React.FC = () => {
 
           <Button
             onClick={handleCalculate}
-            disabled={!selectedLoadoutId || plannerState.status === 'loading'}
+            disabled={!selectedLoadoutId || plannerState.status === 'loading' || isSimulating}
             className="w-full bg-primary hover:bg-primary/90 text-white rounded-2xl h-16 text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
           >
-            {plannerState.status === 'loading' ? (
+            {isSimulating ? (
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Studying Attack Patterns...
+                <span>Running Deep Analysis...</span>
               </div>
             ) : (
-              <span className="flex items-center gap-2">
-                <Target className="w-5 h-5" /> Initialize Battle Simulation
-              </span>
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                <span>Initialize Battle Simulation</span>
+              </div>
             )}
           </Button>
+
+          <AnimatePresence>
+            {isSimulating && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-black/40 rounded-xl p-4 font-mono text-[10px] text-primary/70 space-y-1 overflow-hidden"
+              >
+                {simLog.map((log, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    {`> ${log}`}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
 
@@ -235,7 +278,7 @@ export const PathPlanner: React.FC = () => {
 
                     <div className="flex items-end justify-center gap-2 mb-4">
                       <span className="text-5xl font-mono font-extrabold text-foreground leading-none">
-                        {Math.max(10, 100 - plannerState.currentResult.attemptsEstimation * 10)}
+                        {Math.round(plannerState.currentResult.efficiencyScore * 100)}
                       </span>
                       <span className="text-xl font-bold text-muted-foreground mb-1">%</span>
                     </div>
@@ -244,7 +287,7 @@ export const PathPlanner: React.FC = () => {
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{
-                          width: `${Math.max(10, 100 - plannerState.currentResult.attemptsEstimation * 10)}%`,
+                          width: `${plannerState.currentResult.efficiencyScore * 100}%`,
                         }}
                         className="h-full bg-primary"
                       />
@@ -258,12 +301,60 @@ export const PathPlanner: React.FC = () => {
                         {plannerState.currentResult.attemptsEstimation} Cycles
                       </Badge>
                     </div>
+
+                    {plannerState.currentResult.monteCarloDistribution && (
+                      <div className="mt-8 pt-6 border-t border-border/40">
+                        <div className="flex justify-between items-center mb-4">
+                          <h4 className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground">
+                            Tactical Probability Density (10k Trials)
+                          </h4>
+                        </div>
+                        <div className="flex items-end gap-1 h-20 w-full px-1">
+                          {plannerState.currentResult.monteCarloDistribution.map((v, i) => {
+                            // Professional color scaling: Teal -> Primary -> Orange -> Red
+                            const colorClass =
+                              i < 4 ? 'bg-emerald-500/60' :
+                                i < 8 ? 'bg-primary/50' :
+                                  i < 12 ? 'bg-orange-500/50' : 'bg-red-500/50';
+
+                            return (
+                              <motion.div
+                                key={i}
+                                initial={{ height: 0 }}
+                                animate={{ height: `${Math.max(4, v * 1.5)}%` }} // Scaling for visibility
+                                className={`flex-1 rounded-t-[2px] ${colorClass} relative group transition-all hover:brightness-125`}
+                              >
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100 whitespace-nowrap bg-[#1a1d26] border border-border/60 p-2 rounded shadow-2xl text-[9px] font-mono z-50 pointer-events-none">
+                                  <div className="text-primary font-bold">{v.toFixed(2)}% Wins</div>
+                                  <div className="text-muted-foreground">T: {i * 30}-{(i + 1) * 30}s</div>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                        <div className="flex justify-between mt-3 px-1 text-[8px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="text-emerald-400/80">Blitz Clear</span>
+                            <span>[0:00]</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-1">
+                            <span>Mid-Phase</span>
+                            <span>[3:45]</span>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-red-400/80">Attrition Point</span>
+                            <span>[7:30]</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <StrategyAdvisor
                     advice={plannerState.currentResult.aiAdvice}
                     label={plannerState.currentResult.strategyLabel}
                     score={plannerState.currentResult.efficiencyScore}
+                    factors={plannerState.currentResult.factorImpacts}
                   />
                 </div>
               </CardContent>

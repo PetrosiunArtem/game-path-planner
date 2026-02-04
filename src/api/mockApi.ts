@@ -8,6 +8,15 @@ export interface Loadout {
   superMove: string;
 }
 
+export interface ProgressItem {
+  id: string;
+  type: 'weapon' | 'boss' | 'level' | 'achievement';
+  title: string;
+  description: string;
+  date: string;
+  completed: boolean;
+}
+
 export interface PathResult {
   id: string;
   goalName: string;
@@ -15,9 +24,12 @@ export interface PathResult {
   attemptsEstimation: number;
   recommendedLoadoutId: string | null;
   steps: string[];
-  efficiencyScore: number; // 0 to 1
+  efficiencyScore: number;
   strategyLabel: string;
   aiAdvice: string;
+  simulationTranscript?: string[];
+  factorImpacts?: { factor: string; impact: number; type: 'positive' | 'negative' }[];
+  monteCarloDistribution?: number[];
 }
 
 // Profile types
@@ -121,6 +133,31 @@ export const api = {
       body: JSON.stringify({ bossName, loadoutId }),
     });
     if (!response.ok) throw new Error('Failed to calculate path');
+    return response.json();
+  },
+
+  // Logs API
+  async getLogs(): Promise<ProgressItem[]> {
+    const response = await fetch(`${API_BASE_URL}/logs`);
+    if (!response.ok) throw new Error('Failed to fetch logs');
+    return response.json();
+  },
+
+  async createLog(log: Omit<ProgressItem, 'id' | 'date'>): Promise<ProgressItem> {
+    const response = await fetch(`${API_BASE_URL}/logs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log),
+    });
+    if (!response.ok) throw new Error('Failed to create log entry');
+    return response.json();
+  },
+
+  async toggleLog(id: string): Promise<ProgressItem> {
+    const response = await fetch(`${API_BASE_URL}/logs/${id}/toggle`, {
+      method: 'PUT',
+    });
+    if (!response.ok) throw new Error('Failed to toggle log status');
     return response.json();
   },
 };

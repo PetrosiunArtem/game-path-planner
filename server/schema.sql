@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS weapons;
 DROP TABLE IF EXISTS skills;
 DROP TABLE IF EXISTS bosses;
 DROP TABLE IF EXISTS levels;
+DROP TABLE IF EXISTS logs;
 
 -- Loadouts
 CREATE TABLE loadouts (
@@ -49,14 +50,27 @@ CREATE TABLE levels (
     status TEXT
 );
 
+-- Operational Logs
+CREATE TABLE logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    date DATE DEFAULT CURRENT_DATE,
+    completed BOOLEAN DEFAULT false
+);
+
 -- Initial Data Seed
 INSERT INTO weapons (id, name, type, damage, owned) VALUES
-('1', 'Peashooter', 'Standard', 45, true),
-('2', 'Spread', 'Short Range', 62, false),
-('3', 'Chaser', 'Homing', 30, false),
-('4', 'Lobber', 'Medium Range', 55, false),
-('5', 'Charge', 'Charge Shot', 85, false),
-('6', 'Roundabout', 'Long Range', 48, false);
+('1', 'Peashooter', 'Standard', 30, true),
+('2', 'Spread', 'Short Range', 41, false),
+('3', 'Chaser', 'Homing', 16, false),
+('4', 'Lobber', 'Medium Range', 33, false),
+('5', 'Charge', 'Charge Shot', 39, false),
+('6', 'Roundabout', 'Long Range', 32, false),
+('7', 'Crackshot', 'DLC / Homing', 29, false),
+('8', 'Converge', 'DLC / Wide', 32, false),
+('9', 'Twist-Up', 'DLC / Curved', 34, false);
 
 INSERT INTO skills (id, name, level, max_level) VALUES
 ('1', 'Accuracy', 5, 10),
@@ -82,6 +96,12 @@ INSERT INTO levels (id, name, status) VALUES
 ('4', 'Funhouse Frazzle', 'available'),
 ('5', 'Rugged Ridge', 'locked'),
 ('6', 'Perilous Piers', 'locked');
+
+INSERT INTO logs (type, title, description, date, completed) VALUES
+('level', 'Completed "Forest Follies" Run & Gun', 'Collected all 5 gold coins', '2025-12-01', true),
+('weapon', 'Purchased Spread Shot', 'Acquired from Porkrind''s Emporium', '2025-11-28', true),
+('boss', 'Defeated The Root Pack', 'Knockout! A Brawl is surely brewing!', '2025-11-25', true),
+('level', 'Unlock Inkwell Isle II', 'Defeat all bosses in Isle I to proceed', '2025-12-02', false);
 
 INSERT INTO loadouts (id, name, weapon_primary, weapon_secondary, charm, super_move) VALUES
 ('00000000-0000-0000-0000-000000000001', 'Standard Peashooter', 'Peashooter', 'Spread', 'Smoke Bomb', 'Energy Beam'),

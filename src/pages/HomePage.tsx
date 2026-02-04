@@ -1,11 +1,53 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { User, Target, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { fetchProfile } from '../features/profile/profileSlice';
+import { fetchLoadouts } from '../features/loadouts/loadoutSlice';
 
 const HomePage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const profileState = useAppSelector((state) => state.profile);
+  const loadoutsState = useAppSelector((state) => state.loadouts);
+
+  useEffect(() => {
+    if (profileState.status === 'idle') {
+      dispatch(fetchProfile());
+    }
+    if (loadoutsState.status === 'idle') {
+      dispatch(fetchLoadouts());
+    }
+  }, [dispatch, profileState.status, loadoutsState.status]);
+
+  const stats = [
+    {
+      icon: User,
+      label: 'Wallop Setups',
+      value: loadoutsState.items.length.toString(),
+      color: 'text-primary',
+      bg: 'bg-primary/5',
+    },
+    {
+      icon: Target,
+      label: 'Active Debtors',
+      value: profileState.bosses.length.toString(),
+      color: 'text-yellow-400',
+      bg: 'bg-yellow-400/5',
+    },
+    {
+      icon: TrendingUp,
+      label: 'Contracts Collected',
+      value: profileState.bosses.length > 0
+        ? `${Math.round((profileState.bosses.filter(b => b.defeated).length / profileState.bosses.length) * 100)}%`
+        : '0%',
+      color: 'text-green-400',
+      bg: 'bg-green-400/5',
+    },
+  ];
+
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 via-background to-background border border-primary/10 p-12">
@@ -18,11 +60,11 @@ const HomePage: React.FC = () => {
             v2.0 Beta
           </Badge>
           <h2 className="text-5xl font-extrabold text-foreground mb-4 tracking-tight leading-tight">
-            Master your <span className="text-primary">contracts</span> with tactical precision.
+            Your Ultimate Companion for the <span className="text-primary">Inkwell Isle</span> Adventure.
           </h2>
           <p className="text-lg text-muted-foreground mb-10 leading-relaxed font-medium">
-            The professional dashboard for traversing Inkwell Isle. Track soul contracts, simulate
-            boss encounters with casino-grade odds, and optimize your loadouts.
+            Plan your path to victory, simulate legendary boss battles, and perfect your arsenal 
+            to overcome every challenge on your journey with ease and style.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -46,29 +88,7 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          {
-            icon: User,
-            label: 'Wallop Setups',
-            value: '1',
-            color: 'text-primary',
-            bg: 'bg-primary/5',
-          },
-          {
-            icon: Target,
-            label: 'Active Debtors',
-            value: '10',
-            color: 'text-yellow-400',
-            bg: 'bg-yellow-400/5',
-          },
-          {
-            icon: TrendingUp,
-            label: 'Contracts Collected',
-            value: '0%',
-            color: 'text-green-400',
-            bg: 'bg-green-400/5',
-          },
-        ].map((stat, i) => (
+        {stats.map((stat, i) => (
           <div
             key={i}
             className="glass-card p-6 rounded-2xl border border-border/50 group hover:border-primary/50 transition-all duration-300"
