@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { api, Loadout } from '../../api/mockApi';
+import { api, Loadout } from '../../api/api';
 
 export interface LoadoutState {
   items: Loadout[];
@@ -13,7 +13,6 @@ const initialState: LoadoutState = {
   error: null,
 };
 
-// Async Thunks
 export const fetchLoadouts = createAsyncThunk('loadouts/fetchLoadouts', async () => {
   const response = await api.getLoadouts();
   return response;

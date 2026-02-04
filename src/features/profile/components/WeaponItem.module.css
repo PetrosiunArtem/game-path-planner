@@ -1,0 +1,81 @@
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #2a2d36;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.owned {
+    background-color: rgba(0, 212, 255, 0.05);
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+.affordable {
+    background-color: #0e1117;
+    opacity: 0.9;
+}
+
+.locked {
+    background-color: #0e1117;
+    border-color: rgba(127, 29, 29, 0.3);
+    opacity: 0.4;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+.iconWrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.iconOwned {
+    background-color: rgba(0, 212, 255, 0.1);
+}
+
+.iconLocked {
+    background-color: #2a2d36;
+}
+
+.costBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-width: 1px;
+}
+
+.costAffordable {
+    background-color: rgba(255, 212, 59, 0.1);
+    color: #ffd43b;
+    border-color: rgba(255, 212, 59, 0.2);
+}
+
+.costExpensive {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.checkmark {
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #00d4ff;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}

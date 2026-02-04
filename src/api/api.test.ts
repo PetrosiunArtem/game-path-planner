@@ -1,4 +1,4 @@
-import { api } from './mockApi';
+import { api } from './api';
 
 describe('Path Planner API Integration', () => {
   beforeEach(() => {

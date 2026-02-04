@@ -1,4 +1,3 @@
-// Types
 export interface Loadout {
   id: string;
   name: string;
@@ -33,7 +32,6 @@ export interface PathResult {
   monteCarloDistribution?: number[];
 }
 
-// Profile types
 export interface Weapon {
   id: string;
   name: string;
@@ -76,37 +74,32 @@ export interface ProfileData {
 const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
 const API_BASE_URL = isProd ? `${window.location.origin}/api` : 'http://localhost:3000/api';
 
-// API Service
-// Fallback Data
 const fallbackProfile: ProfileData = {
   weapons: [
-    { id: 'w1', name: 'Peashooter', type: 'Standard', damage: 10, owned: true, cost: 0 },
-    { id: 'w2', name: 'Spread', type: 'Spread', damage: 15, owned: false, cost: 4 },
-    { id: 'w3', name: 'Chaser', type: 'Homing', damage: 8, owned: true, cost: 4 },
+    { id: '1', name: 'Peashooter', type: 'Standard', damage: 30, owned: true, cost: 0 },
   ],
-  skills: [
-    { id: 's1', name: 'Health', level: 3, maxLevel: 5, cost: 1 },
-    { id: 's2', name: 'Super Meter', level: 2, maxLevel: 5, cost: 1 },
-  ],
-  bosses: [
-    { id: 'b1', name: 'The Root Pack', defeated: true, difficulty: 'Easy' },
-    { id: 'b2', name: 'Goopy Le Grande', defeated: true, difficulty: 'Easy' },
-    { id: 'b3', name: 'Hilda Berg', defeated: false, difficulty: 'Medium' },
-    { id: 'b4', name: 'Cagney Carnation', defeated: false, difficulty: 'Medium' },
-  ],
-  levels: [
-    { id: 'l1', name: 'Inkwell Isle I', status: 'available', coinsCollected: 0, totalCoins: 5 },
-    { id: 'l2', name: 'Inkwell Isle II', status: 'locked', coinsCollected: 0, totalCoins: 5 },
-  ],
+  skills: [],
+  bosses: [],
+  levels: [],
 };
 
 const fallbackLoadouts: Loadout[] = [
   { id: 'default', name: 'Default Setup', weaponPrimary: 'Peashooter', weaponSecondary: 'Spread', charm: 'Smoke Bomb', superMove: 'Super Art I' }
 ];
 
-// API Service
+const fallbackPathResult: PathResult = {
+  id: 'sim-fallback',
+  goalName: 'Unknown Encounter',
+  estimatedTimeMinutes: 30,
+  attemptsEstimation: 5,
+  recommendedLoadoutId: null,
+  steps: ['Observe boss patterns', 'Conserve HP in early phases', 'Deliver final blow'],
+  efficiencyScore: 0.5,
+  strategyLabel: 'Cautious Approach',
+  aiAdvice: 'Tactical link unstable. Recommending defensive playstyle until data sync is restored.'
+};
+
 export const api = {
-  // Loadouts CRUD
   async getLoadouts(): Promise<Loadout[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/loadouts`);
@@ -128,8 +121,7 @@ export const api = {
       if (!response.ok) throw new Error('Failed to create loadout');
       return await response.json();
     } catch (error) {
-      console.warn('API Error, simulating creation:', error);
-      return { ...loadout, id: 'temp-' + Date.now() };
+      return { ...loadout, id: 'temp-' + Date.now() } as Loadout;
     }
   },
 
@@ -160,14 +152,12 @@ export const api = {
     }
   },
 
-  // Profile CRUD
   async getProfile(): Promise<ProfileData> {
     try {
       const response = await fetch(`${API_BASE_URL}/profile`);
       if (!response.ok) throw new Error('Failed to fetch profile');
       return await response.json();
     } catch (error) {
-      console.warn('API Error (getProfile), using fallback:', error);
       return fallbackProfile;
     }
   },
@@ -182,12 +172,10 @@ export const api = {
       if (!response.ok) throw new Error('Failed to update profile');
       return profile;
     } catch (error) {
-      console.warn('API Error (updateProfile), simulating success:', error);
       return profile;
     }
   },
 
-  // Planner Logic (Moved to backend)
   async calculatePath(bossName: string, loadoutId: string): Promise<PathResult> {
     try {
       const response = await fetch(`${API_BASE_URL}/calculate-path`, {
@@ -198,33 +186,10 @@ export const api = {
       if (!response.ok) throw new Error('Failed to calculate path');
       return await response.json();
     } catch (error) {
-      console.warn('API Error (calculatePath), using fallback simulation:', error);
-      // Fallback simulation result
-      return {
-        id: 'sim-fallback',
-        goalName: bossName,
-        estimatedTimeMinutes: 5,
-        attemptsEstimation: 12,
-        recommendedLoadoutId: loadoutId,
-        steps: [
-          'Phase 1: Dodge initial attacks using Smoke Bomb.',
-          'Phase 2: Use Spread for high DPS during close encounters.',
-          'Phase 3: Activate Super Art I for finishing blow.'
-        ],
-        efficiencyScore: 0.85,
-        strategyLabel: 'Aggressive Rush',
-        aiAdvice: 'Keep moving and use your dash invincibility frames.',
-        simulationTranscript: [
-          'Initializing combat simulation...',
-          'Analyzing movement patterns...',
-          'Simulation complete.'
-        ],
-        monteCarloDistribution: [0, 5, 20, 50, 80, 70, 40, 10, 5, 0]
-      };
+      return fallbackPathResult;
     }
   },
 
-  // Logs API
   async getLogs(): Promise<ProgressItem[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/logs`);
@@ -245,15 +210,19 @@ export const api = {
       if (!response.ok) throw new Error('Failed to create log entry');
       return await response.json();
     } catch (error) {
-      return { ...log, id: 'temp-log', date: new Date().toISOString() };
+      return { ...log, id: 'temp-' + Date.now(), date: new Date().toISOString() } as ProgressItem;
     }
   },
 
   async toggleLog(id: string): Promise<ProgressItem> {
-    const response = await fetch(`${API_BASE_URL}/logs/${id}/toggle`, {
-      method: 'PUT',
-    });
-    if (!response.ok) throw new Error('Failed to toggle log status');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE_URL}/logs/${id}/toggle`, {
+        method: 'PUT',
+      });
+      if (!response.ok) throw new Error('Failed to toggle log status');
+      return await response.json();
+    } catch (error) {
+      throw error; // Or return a mock if toggle fails
+    }
   },
 };

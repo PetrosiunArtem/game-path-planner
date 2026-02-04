@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { api, ProfileData, Weapon, Skill, Boss, Level } from '../../api/mockApi';
+import { api, ProfileData, Weapon, Skill, Boss, Level } from '../../api/api';
 
 export type { Weapon, Skill, Boss, Level };
 
@@ -17,7 +17,6 @@ const initialState: ProfileState = {
   error: null,
 };
 
-// Async Thunks
 export const fetchProfile = createAsyncThunk('profile/fetchProfile', async () => {
   return await api.getProfile();
 });

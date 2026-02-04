@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { api, ProgressItem } from '../../api/mockApi';
+import { api, ProgressItem } from '../../api/api';
 
 export interface ProgressState {
     items: ProgressItem[];

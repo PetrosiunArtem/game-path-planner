@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchLoadouts, removeLoadout } from './loadoutSlice';
 import { LoadoutForm } from './LoadoutForm';
-import { Loadout } from '../../api/mockApi';
+import { Loadout } from '../../api/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

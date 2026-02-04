@@ -1,6 +1,4 @@
-// noinspection SqlNoDataSourceInspection
-// noinspection JSUnresolvedImport
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -8,6 +6,40 @@ import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateCombatPath } from './plannerLogic.js';
 import pool from './db.js';
+
+interface LoadoutRow {
+    id: string;
+    name: string;
+    weapon_primary: string;
+    weapon_secondary: string;
+    charm: string;
+    super_move: string;
+}
+
+interface WeaponRow {
+    id: string;
+    name: string;
+    type: string;
+    damage: number;
+    owned: boolean;
+    cost: number;
+}
+
+interface SkillRow {
+    id: string;
+    name: string;
+    level: number;
+    max_level: number;
+    cost: number;
+}
+
+interface LevelRow {
+    id: string;
+    name: string;
+    status: string;
+    coins_collected: number;
+    total_coins: number;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,38 +50,36 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve static files from the Vite build directory
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
 
-// Log all requests
-app.use((req, _res, next) => {
-    console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+app.use((_req: Request, _res: Response, next: NextFunction) => {
     next();
 });
 
-// Loadouts
-const mapLoadout = (row: any) => ({
-    ...row,
+const mapLoadout = (row: LoadoutRow) => ({
+    id: row.id,
+    name: row.name,
     weaponPrimary: row.weapon_primary,
     weaponSecondary: row.weapon_secondary,
+    charm: row.charm,
     superMove: row.super_move
 });
 
-app.get('/api/loadouts', async (_req, res) => {
+app.get('/api/loadouts', async (_req: Request, res: Response) => {
     try {
-        const result = await pool.query('SELECT * FROM loadouts');
+        const result = await pool.query<LoadoutRow>('SELECT * FROM loadouts');
         res.json(result.rows.map(mapLoadout));
     } catch (err) {
         res.status(500).json({ error: (err as Error).message });
     }
 });
 
-app.post('/api/loadouts', async (req, res) => {
+app.post('/api/loadouts', async (req: Request, res: Response) => {
     const { name, weaponPrimary, weaponSecondary, charm, superMove } = req.body;
     try {
         const id = uuidv4();
-        const result = await pool.query(
+        const result = await pool.query<LoadoutRow>(
             'INSERT INTO loadouts (id, name, weapon_primary, weapon_secondary, charm, super_move) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [id, name, weaponPrimary, weaponSecondary, charm, superMove]
         );
@@ -59,11 +89,11 @@ app.post('/api/loadouts', async (req, res) => {
     }
 });
 
-app.put('/api/loadouts/:id', async (req, res) => {
+app.put('/api/loadouts/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, weaponPrimary, weaponSecondary, charm, superMove } = req.body;
     try {
-        const result = await pool.query(
+        const result = await pool.query<LoadoutRow>(
             'UPDATE loadouts SET name = $1, weapon_primary = $2, weapon_secondary = $3, charm = $4, super_move = $5 WHERE id = $6 RETURNING *',
             [name, weaponPrimary, weaponSecondary, charm, superMove, id]
         );
@@ -74,37 +104,36 @@ app.put('/api/loadouts/:id', async (req, res) => {
     }
 });
 
-app.get('/api/profile', async (_req, res) => {
+app.get('/api/profile', async (_req: Request, res: Response) => {
     try {
-        const weapons = await pool.query('SELECT * FROM weapons');
-        const skills = await pool.query('SELECT * FROM skills');
-        const bosses = await pool.query('SELECT * FROM bosses');
-        const levels = await pool.query('SELECT * FROM levels');
+        const weaponsResult = await pool.query<WeaponRow>('SELECT * FROM weapons');
+        const skillsResult = await pool.query<SkillRow>('SELECT * FROM skills');
+        const bossesResult = await pool.query<{ id: string, name: string, defeated: boolean, difficulty: string }>('SELECT * FROM bosses');
+        const levelsResult = await pool.query<LevelRow>('SELECT * FROM levels');
 
         res.json({
-            weapons: weapons.rows.map((w: any) => ({
+            weapons: weaponsResult.rows.map((w) => ({
                 ...w,
                 cost: w.cost || 0
             })),
-            skills: skills.rows.map((s: any) => ({
+            skills: skillsResult.rows.map((s) => ({
                 ...s,
                 maxLevel: s.max_level,
                 cost: s.cost || 1
             })),
-            bosses: bosses.rows,
-            levels: levels.rows.map((l: any) => ({
+            bosses: bossesResult.rows,
+            levels: levelsResult.rows.map((l) => ({
                 ...l,
                 coinsCollected: l.coins_collected,
                 totalCoins: l.total_coins
             })),
         });
     } catch (err) {
-        console.error('Error fetching profile:', err);
         res.status(500).json({ error: (err as Error).message });
     }
 });
 
-app.put('/api/profile', async (req, res) => {
+app.put('/api/profile', async (req: Request, res: Response) => {
     const { weapons, skills, bosses, levels } = req.body;
     const client = await pool.connect();
     try {
@@ -144,8 +173,7 @@ app.put('/api/profile', async (req, res) => {
     }
 });
 
-// Logs
-app.get('/api/logs', async (_req, res) => {
+app.get('/api/logs', async (_req: Request, res: Response) => {
     try {
         const result = await pool.query('SELECT * FROM logs ORDER BY date DESC, id DESC');
         res.json(result.rows);
@@ -154,7 +182,7 @@ app.get('/api/logs', async (_req, res) => {
     }
 });
 
-app.post('/api/logs', async (req, res) => {
+app.post('/api/logs', async (req: Request, res: Response) => {
     const { type, title, description, completed } = req.body;
     try {
         const result = await pool.query(
@@ -167,7 +195,7 @@ app.post('/api/logs', async (req, res) => {
     }
 });
 
-app.put('/api/logs/:id/toggle', async (req, res) => {
+app.put('/api/logs/:id/toggle', async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const result = await pool.query(
@@ -181,14 +209,14 @@ app.put('/api/logs/:id/toggle', async (req, res) => {
     }
 });
 
-app.post('/api/calculate-path', async (req, res) => {
+app.post('/api/calculate-path', async (req: Request, res: Response) => {
     const { bossName, loadoutId } = req.body;
     try {
-        const loadoutResult = await pool.query('SELECT * FROM loadouts WHERE id = $1', [loadoutId]);
-        const skillsResult = await pool.query('SELECT * FROM skills');
-        const bossesResult = await pool.query('SELECT * FROM bosses WHERE name = $1', [bossName]);
-        const weaponsResult = await pool.query('SELECT * FROM weapons');
-        const levelsResult = await pool.query('SELECT * FROM levels');
+        const loadoutResult = await pool.query<LoadoutRow>('SELECT * FROM loadouts WHERE id = $1', [loadoutId]);
+        const skillsResult = await pool.query<SkillRow>('SELECT * FROM skills');
+        const bossesResult = await pool.query<{ name: string, difficulty: string, defeated: boolean }>('SELECT * FROM bosses WHERE name = $1', [bossName]);
+        const weaponsResult = await pool.query<WeaponRow>('SELECT * FROM weapons');
+        const levelsResult = await pool.query<LevelRow>('SELECT * FROM levels');
 
         const usedLoadout = loadoutResult.rows[0];
         const skills = skillsResult.rows;
@@ -205,18 +233,18 @@ app.post('/api/calculate-path', async (req, res) => {
                 weapon_secondary: usedLoadout.weapon_secondary,
                 charm: usedLoadout.charm
             } : null,
-            skills: skills.map((s: any) => ({
+            skills: skills.map((s) => ({
                 name: s.name,
                 level: s.level,
                 maxLevel: s.max_level,
                 cost: s.cost || 1
             })),
-            weapons: weapons.map((w: any) => ({
+            weapons: weapons.map((w) => ({
                 name: w.name,
                 owned: w.owned,
                 cost: w.cost || 0
             })),
-            levels: levels.map((l: any) => ({
+            levels: levels.map((l) => ({
                 name: l.name,
                 status: l.status,
                 coinsCollected: l.coins_collected,
@@ -237,13 +265,10 @@ app.post('/api/calculate-path', async (req, res) => {
     }
 });
 
-// Export app for testing
 export { app };
 
-// Only listen if not in test mode
 if (process.env.NODE_ENV !== 'test') {
-    // Serve index.html for any other requests (SPA support)
-    app.get(/^(?!\/api).+/, (_req, res) => {
+    app.get(/^(?!\/api).+/, (_req: Request, res: Response) => {
         res.sendFile(path.join(__dirname, '../dist/index.html'));
     });
 

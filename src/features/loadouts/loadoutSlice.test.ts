@@ -1,4 +1,4 @@
-import { Loadout } from '../../api/mockApi';
+import { Loadout } from '../../api/api';
 import loadoutReducer, { addLoadout, LoadoutState } from './loadoutSlice';
 
 describe('loadout reducer', () => {

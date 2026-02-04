@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { addLoadout, editLoadout } from './loadoutSlice';
-import { Loadout } from '../../api/mockApi';
+import { Loadout } from '../../api/api';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';

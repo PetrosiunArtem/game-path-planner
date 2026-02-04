@@ -1,5 +1,5 @@
 import plannerReducer, { clearResult, calculateBossPath } from './plannerSlice';
-import { PathResult } from '../../api/mockApi';
+import { PathResult } from '../../api/api';
 
 describe('planner reducer', () => {
   const initialState = {

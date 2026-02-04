@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { api } from '../../api/mockApi';
+import { api } from '../../api/api';
 import profileReducer, {
     fetchProfile,
     toggleWeapon,
@@ -10,7 +10,7 @@ import profileReducer, {
 import { RootState } from '../../app/store';
 
 // Mock the API
-jest.mock('../../api/mockApi', () => ({
+jest.mock('../../api/api', () => ({
     api: {
         getProfile: jest.fn(),
         updateProfile: jest.fn(),

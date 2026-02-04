@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { api, PathResult } from '../../api/mockApi';
+import { api, PathResult } from '../../api/api';
 
 export interface PlannerState {
   currentResult: PathResult | null;
