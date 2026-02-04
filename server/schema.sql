@@ -24,7 +24,8 @@ CREATE TABLE weapons (
     name TEXT NOT NULL,
     type TEXT,
     damage INTEGER,
-    owned BOOLEAN DEFAULT false
+    owned BOOLEAN DEFAULT false,
+    cost INTEGER DEFAULT 4
 );
 
 -- Skills
@@ -32,7 +33,8 @@ CREATE TABLE skills (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     level INTEGER,
-    max_level INTEGER
+    max_level INTEGER,
+    cost INTEGER DEFAULT 1
 );
 
 -- Bosses
@@ -63,23 +65,23 @@ CREATE TABLE logs (
 );
 
 -- Initial Data Seed
-INSERT INTO weapons (id, name, type, damage, owned) VALUES
-('1', 'Peashooter', 'Standard', 30, true),
-('2', 'Spread', 'Short Range', 41, false),
-('3', 'Chaser', 'Homing', 16, false),
-('4', 'Lobber', 'Medium Range', 33, false),
-('5', 'Charge', 'Charge Shot', 39, false),
-('6', 'Roundabout', 'Long Range', 32, false),
-('7', 'Crackshot', 'DLC / Homing', 29, false),
-('8', 'Converge', 'DLC / Wide', 32, false),
-('9', 'Twist-Up', 'DLC / Curved', 34, false);
+INSERT INTO weapons (id, name, type, damage, owned, cost) VALUES
+('1', 'Peashooter', 'Standard', 30, true, 0),
+('2', 'Spread', 'Short Range', 41, false, 4),
+('3', 'Chaser', 'Homing', 16, false, 4),
+('4', 'Lobber', 'Medium Range', 33, false, 4),
+('5', 'Charge', 'Charge Shot', 39, false, 4),
+('6', 'Roundabout', 'Long Range', 32, false, 4),
+('7', 'Crackshot', 'DLC / Homing', 29, false, 5),
+('8', 'Converge', 'DLC / Wide', 32, false, 5),
+('9', 'Twist-Up', 'DLC / Curved', 34, false, 5);
 
-INSERT INTO skills (id, name, level, max_level) VALUES
-('1', 'Accuracy', 5, 10),
-('2', 'Parry Skill', 3, 10),
-('3', 'Survival', 7, 10),
-('4', 'Movement', 4, 10),
-('5', 'Pattern Recognition', 2, 10);
+INSERT INTO skills (id, name, level, max_level, cost) VALUES
+('1', 'Accuracy', 5, 10, 1),
+('2', 'Parry Skill', 3, 10, 1),
+('3', 'Survival', 7, 10, 1),
+('4', 'Movement', 4, 10, 1),
+('5', 'Pattern Recognition', 2, 10, 1);
 
 INSERT INTO bosses (id, name, defeated, difficulty) VALUES
 ('1', 'The Root Pack', true, 'Easy'),

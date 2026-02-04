@@ -141,7 +141,21 @@ export const toggleWeapon = createAsyncThunk(
   'profile/toggleWeapon',
   async (id: string, { getState }) => {
     const state = getState() as { profile: ProfileState };
-    const profile = { ...state.profile };
+    const profile = state.profile;
+    const weapon = profile.weapons.find((w) => w.id === id);
+
+    if (!weapon) throw new Error('Weapon not found');
+
+    // Deduction logic: if trying to own a weapon, check balance
+    if (!weapon.owned) {
+      const balance = selectWallet(state);
+      if (balance < (weapon.cost || 0)) {
+        // Technically we could return a specific error or just no-op
+        // For now, let's just return current profile to avoid state change
+        return profile;
+      }
+    }
+
     const newWeapons = profile.weapons.map((w) => (w.id === id ? { ...w, owned: !w.owned } : w));
 
     const newProfile: ProfileData = {
@@ -224,4 +238,19 @@ export const cycleLevelStatus = createAsyncThunk(
 );
 
 export const { localToggleWeapon, localUpdateLevelCoins } = profileSlice.actions;
+
+// Selectors
+export const selectTotalCollected = (state: { profile: ProfileState }) => {
+  return state.profile.levels.reduce((sum, l) => sum + (l.coinsCollected || 0), 0);
+};
+
+export const selectWallet = (state: { profile: ProfileState }) => {
+  const totalCollected = selectTotalCollected(state);
+  const totalSpent = state.profile.weapons
+    .filter((w) => w.owned)
+    .reduce((sum, w) => sum + (w.cost || 0), 0);
+
+  return Math.max(0, totalCollected - totalSpent);
+};
+
 export default profileSlice.reducer;

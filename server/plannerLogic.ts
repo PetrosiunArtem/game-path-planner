@@ -10,6 +10,7 @@ export interface SimulationWeapon {
     dps: number;
     exDamage: number;
     risk: number;
+    cost: number;
     isCharge?: boolean;
     isHoming?: boolean;
     isParabolic?: boolean;
@@ -18,15 +19,15 @@ export interface SimulationWeapon {
 }
 
 export const WEAPON_STATS: Record<string, SimulationWeapon> = {
-    'Peashooter': { id: 'Peashooter', dps: 30.0, exDamage: 25.0, risk: 1.0 },
-    'Spread': { id: 'Spread', dps: 41.3, exDamage: 34.0, risk: 1.8 },
-    'Chaser': { id: 'Chaser', dps: 15.6, exDamage: 13.5, risk: 0.5, isHoming: true },
-    'Lobber': { id: 'Lobber', dps: 33.1, exDamage: 26.0, risk: 1.3, isParabolic: true },
-    'Charge': { id: 'Charge', dps: 38.5, exDamage: 26.0, risk: 1.2, isCharge: true, alphaStrike: 46.0 },
-    'Roundabout': { id: 'Roundabout', dps: 31.5, exDamage: 35.0, risk: 0.8, isReturn: true },
-    'Crackshot': { id: 'Crackshot', dps: 28.5, exDamage: 24.0, risk: 0.7, isHoming: true },
-    'Converge': { id: 'Converge', dps: 32.0, exDamage: 26.0, risk: 1.2 },
-    'Twist-Up': { id: 'Twist-Up', dps: 34.0, exDamage: 27.5, risk: 1.5, isParabolic: true },
+    'Peashooter': { id: 'Peashooter', dps: 30.0, exDamage: 25.0, risk: 1.0, cost: 0 },
+    'Spread': { id: 'Spread', dps: 41.3, exDamage: 34.0, risk: 1.8, cost: 4 },
+    'Chaser': { id: 'Chaser', dps: 15.6, exDamage: 13.5, risk: 0.5, isHoming: true, cost: 4 },
+    'Lobber': { id: 'Lobber', dps: 33.1, exDamage: 26.0, risk: 1.3, isParabolic: true, cost: 4 },
+    'Charge': { id: 'Charge', dps: 38.5, exDamage: 26.0, risk: 1.2, isCharge: true, alphaStrike: 46.0, cost: 4 },
+    'Roundabout': { id: 'Roundabout', dps: 31.5, exDamage: 35.0, risk: 0.8, isReturn: true, cost: 4 },
+    'Crackshot': { id: 'Crackshot', dps: 28.5, exDamage: 24.0, risk: 0.7, isHoming: true, cost: 5 },
+    'Converge': { id: 'Converge', dps: 32.0, exDamage: 26.0, risk: 1.2, cost: 5 },
+    'Twist-Up': { id: 'Twist-Up', dps: 34.0, exDamage: 27.5, risk: 1.5, isParabolic: true, cost: 5 },
 };
 
 export interface BossPhase {
@@ -66,6 +67,14 @@ export const BOSS_DATA: Record<string, BossCombatInfo> = {
             { hpPercentThreshold: 1.0, complexity: 6, transitionTimeSeconds: 0, kinematics: { jumpV: 0, jumpH: 0, gravity: 0 } },
             { hpPercentThreshold: 0.6, complexity: 8, transitionTimeSeconds: 4, kinematics: { jumpV: 0, jumpH: 0, gravity: 0 } },
             { hpPercentThreshold: 0.3, complexity: 10, transitionTimeSeconds: 4, kinematics: { jumpV: 0, jumpH: 0, gravity: 0 } }
+        ]
+    },
+    'The Devil': {
+        hp: 2000, criticalSkill: 'Survival', counterWeapon: 'Spread', tips: ['Stay in the center during the final phase'],
+        phases: [
+            { hpPercentThreshold: 1.0, complexity: 7, transitionTimeSeconds: 0, kinematics: { jumpV: 1500, jumpH: 500, gravity: 4000 } },
+            { hpPercentThreshold: 0.7, complexity: 9, transitionTimeSeconds: 5, kinematics: { jumpV: 1800, jumpH: 600, gravity: 4500 } },
+            { hpPercentThreshold: 0.4, complexity: 11, transitionTimeSeconds: 5, kinematics: { jumpV: 0, jumpH: 0, gravity: 0 } }
         ]
     }
 };
@@ -225,8 +234,62 @@ const runScientificSim = (input: {
     };
 };
 
+/**
+ * PROGRESSION ADVICE ENGINE
+ */
+const getProgressionAdvice = (input: {
+    winRate: number,
+    bossName: string,
+    weapons: any[],
+    levels: any[],
+    skills: any[],
+    currentGrade: string
+}) => {
+    const boss = BOSS_DATA[input.bossName] || BOSS_DATA['The Root Pack'];
+    const tips: string[] = [];
+
+    // Always provide tips if win rate is low or if it's "The Devil"
+    if (input.winRate >= 0.8 && input.bossName !== 'The Devil') return [];
+
+    // Calculate Wallet (internal balance for suggestions)
+    const totalCollected = input.levels.reduce((sum, l) => sum + (Number(l.coinsCollected) || 0), 0);
+    const totalSpent = input.weapons.filter(w => w.owned).reduce((sum, w) => sum + (Number(w.cost) || 0), 0);
+    const balance = Math.max(0, totalCollected - totalSpent);
+
+    // Suggest Weapon
+    const counterWName = boss.counterWeapon;
+    const counterWStats = WEAPON_STATS[counterWName];
+    const ownedCounter = input.weapons.find(w => w.name === counterWName && w.owned);
+
+    if (!ownedCounter && counterWStats) {
+        if (balance >= counterWStats.cost) {
+            tips.push(`SHOP ALERT: Purchase ${counterWName} (${counterWStats.cost} coins) to exploit boss weakness.`);
+        } else {
+            const needed = counterWStats.cost - balance;
+            // Improved farming level check (include coinsCollected check)
+            const farmingLevel = input.levels.find(l =>
+                (l.status === 'available' || l.status === 'completed') &&
+                (Number(l.totalCoins) - Number(l.coinsCollected)) > 0
+            );
+            if (farmingLevel) {
+                tips.push(`FARMING GOAL: Collect ${needed} more coins in "${farmingLevel.name}" to buy ${counterWName}.`);
+            } else {
+                tips.push(`ECONOMY WARNING: Arsenal bottleneck. Need ${needed} more coins to acquire ${counterWName}.`);
+            }
+        }
+    }
+
+    // Suggest Skill (No cost check, skills are free evaluations now)
+    const critSkill = input.skills.find(s => s.name === boss.criticalSkill);
+    if (critSkill && Number(critSkill.level) < Number(critSkill.maxLevel || 10)) {
+        tips.push(`TACTICAL TIP: Increase ${boss.criticalSkill} level for optimal phase survival.`);
+    }
+
+    return tips;
+};
+
 export const calculateCombatPath = (input: any) => {
-    const skills = input.skills;
+    const skills = input.skills || [];
     const getLvl = (n: string) => skills.find((s: any) => s.name === n)?.level || 0;
 
     const simInput = {
@@ -245,12 +308,22 @@ export const calculateCombatPath = (input: any) => {
     const sim = runScientificSim(simInput);
     const boss = BOSS_DATA[input.bossName] || BOSS_DATA['The Root Pack'];
 
+    const progressionTips = getProgressionAdvice({
+        winRate: sim.successRate,
+        bossName: input.bossName,
+        weapons: input.weapons || [],
+        levels: input.levels || [],
+        skills: input.skills || [],
+        currentGrade: sim.grade
+    });
+
     return {
         id: uuidv4(),
         goalName: `Defeat ${input.bossName} [Scientific Model]`,
         estimatedTimeMinutes: sim.avgTimeMinutes,
         attemptsEstimation: Math.ceil(1 / Math.max(0.01, sim.successRate)),
         steps: boss.tips,
+        progressionTips: progressionTips,
         efficiencyScore: sim.successRate,
         strategyLabel: `Grade ${sim.grade}`,
         aiAdvice: sim.grade === 'S'

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Clock, Target } from 'lucide-react';
+import { Clock, Target, Coins, Info } from 'lucide-react';
 import { StrategyAdvisor } from './StrategyAdvisor';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -253,7 +253,7 @@ export const PathPlanner: React.FC = () => {
                 <div className="space-y-8">
                   <div>
                     <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground mb-6 flex items-center gap-2">
-                      Operational Vectors
+                      Combat Directives
                     </h4>
                     <div className="space-y-4">
                       {plannerState.currentResult.steps.map((step, idx) => (
@@ -268,6 +268,25 @@ export const PathPlanner: React.FC = () => {
                       ))}
                     </div>
                   </div>
+
+                  {plannerState.currentResult.progressionTips && plannerState.currentResult.progressionTips.length > 0 && (
+                    <div className="pt-6 border-t border-border/40">
+                      <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-[#ffd43b] mb-6 flex items-center gap-2">
+                        <Coins className="w-5 h-5" />
+                        Progression Intel
+                      </h4>
+                      <div className="space-y-3">
+                        {plannerState.currentResult.progressionTips.map((tip, idx) => (
+                          <div key={idx} className="bg-[#ffd43b]/5 border border-[#ffd43b]/20 p-4 rounded-xl flex gap-3 items-start">
+                            <Info className="w-4 h-4 text-[#ffd43b] mt-0.5" />
+                            <p className="text-sm text-[#ffd43b]/90 font-medium italic">
+                              {tip}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-8">

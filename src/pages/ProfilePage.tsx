@@ -7,11 +7,13 @@ import {
   toggleBoss,
   cycleLevelStatus,
   updateLevelCoins,
+  selectWallet,
 } from '../features/profile/profileSlice';
 import { Sword, Shield, Skull, Map, Check, Coins } from 'lucide-react';
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
+  const wallet = useAppSelector(selectWallet);
   const { weapons, skills, bosses, levels, status, error } = useAppSelector(
     (state) => state.profile
   );
@@ -39,7 +41,16 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <h1 className="text-3xl font-bold text-[#00d4ff] mb-6">Player Profile</h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <h1 className="text-3xl font-bold text-[#00d4ff]">Player Profile</h1>
+        <div className="bg-[#ffd43b]/10 border border-[#ffd43b]/30 px-4 py-2 rounded-xl flex items-center gap-2">
+          <Coins className="w-5 h-5 text-[#ffd43b]" />
+          <div>
+            <div className="text-[10px] uppercase font-bold text-[#ffd43b]/60 leading-none mb-1">Available Coins</div>
+            <div className="text-xl font-mono font-black text-[#ffd43b]">{wallet}</div>
+          </div>
+        </div>
+      </div>
 
       {/* Weapons Section */}
       <div className="bg-[#1a1d26] border border-[#2a2d36] rounded-lg overflow-hidden">
@@ -51,38 +62,54 @@ export default function ProfilePage() {
         </div>
         <div className="p-4 md:p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {weapons.map((weapon) => (
-              <div
-                key={weapon.id}
-                className={`flex items-center justify-between p-3 md:p-4 rounded-lg border transition-colors cursor-pointer ${weapon.owned
-                  ? 'bg-[#00d4ff]/5 border-[#00d4ff]/30'
-                  : 'bg-[#0e1117] border-[#2a2d36] opacity-60'
-                  }`}
-                onClick={() => dispatch(toggleWeapon(weapon.id))}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${weapon.owned ? 'bg-[#00d4ff]/10' : 'bg-[#2a2d36]'
-                      }`}
-                  >
-                    <Sword
-                      className={`w-5 h-5 ${weapon.owned ? 'text-[#00d4ff]' : 'text-[#a0a3ab]'}`}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[#e4e6eb] font-bold truncate">{weapon.name}</div>
-                    <div className="text-xs text-[#a0a3ab] font-mono truncate">
-                      {weapon.type} • DPS: <span className="text-primary font-bold">{weapon.damage.toFixed(1)}</span>
+            {weapons.map((weapon) => {
+              const affordable = weapon.owned || wallet >= (weapon.cost || 0);
+              return (
+                <div
+                  key={weapon.id}
+                  className={`flex items-center justify-between p-3 md:p-4 rounded-lg border transition-colors cursor-pointer ${weapon.owned
+                    ? 'bg-[#00d4ff]/5 border-[#00d4ff]/30'
+                    : affordable
+                      ? 'bg-[#0e1117] border-[#2a2d36] opacity-90'
+                      : 'bg-[#0e1117] border-red-900/30 opacity-40 grayscale cursor-not-allowed'
+                    }`}
+                  onClick={() => affordable && dispatch(toggleWeapon(weapon.id))}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${weapon.owned ? 'bg-[#00d4ff]/10' : 'bg-[#2a2d36]'
+                        }`}
+                    >
+                      <Sword
+                        className={`w-5 h-5 ${weapon.owned ? 'text-[#00d4ff]' : 'text-[#a0a3ab]'}`}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[#e4e6eb] font-bold truncate">{weapon.name}</div>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <div className="text-xs text-[#a0a3ab] font-mono truncate">
+                          {weapon.type} • DPS: <span className="text-primary font-bold">{weapon.damage.toFixed(1)}</span>
+                        </div>
+                        {!weapon.owned && (
+                          <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border ${affordable
+                            ? 'bg-[#ffd43b]/10 text-[#ffd43b] border-[#ffd43b]/20'
+                            : 'bg-red-500/10 text-red-400 border-red-500/20'
+                            }`}>
+                            <Coins className="w-2.5 h-2.5" />
+                            {weapon.cost}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  {weapon.owned && (
+                    <div className="w-6 h-6 bg-[#00d4ff] rounded-full flex items-center justify-center flex-shrink-0 ml-2">
+                      <Check className="w-4 h-4 text-[#0e1117]" />
+                    </div>
+                  )}
                 </div>
-                {weapon.owned && (
-                  <div className="w-6 h-6 bg-[#00d4ff] rounded-full flex items-center justify-center flex-shrink-0 ml-2">
-                    <Check className="w-4 h-4 text-[#0e1117]" />
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -102,8 +129,10 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <div className="text-[#e4e6eb] font-medium">{skill.name}</div>
-                    <div className="text-xs md:text-sm text-[#a0a3ab]">
-                      Level {skill.level}/{skill.maxLevel}
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs md:text-sm text-[#a0a3ab]">
+                        Level {skill.level}/{skill.maxLevel}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

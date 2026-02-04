@@ -73,8 +73,15 @@ app.get('/api/profile', async (_req, res) => {
         const levels = await pool.query('SELECT * FROM levels');
 
         res.json({
-            weapons: weapons.rows,
-            skills: skills.rows.map((s: any) => ({ ...s, maxLevel: s.max_level })),
+            weapons: weapons.rows.map((w: any) => ({
+                ...w,
+                cost: w.cost || 0
+            })),
+            skills: skills.rows.map((s: any) => ({
+                ...s,
+                maxLevel: s.max_level,
+                cost: s.cost || 1
+            })),
             bosses: bosses.rows,
             levels: levels.rows.map((l: any) => ({
                 ...l,
@@ -171,12 +178,14 @@ app.post('/api/calculate-path', async (req, res) => {
         const loadoutResult = await pool.query('SELECT * FROM loadouts WHERE id = $1', [loadoutId]);
         const skillsResult = await pool.query('SELECT * FROM skills');
         const bossesResult = await pool.query('SELECT * FROM bosses WHERE name = $1', [bossName]);
-        const weaponsResult = await pool.query('SELECT name FROM weapons WHERE owned = true');
+        const weaponsResult = await pool.query('SELECT * FROM weapons');
+        const levelsResult = await pool.query('SELECT * FROM levels');
 
         const usedLoadout = loadoutResult.rows[0];
         const skills = skillsResult.rows;
         const targetBoss = bossesResult.rows[0];
-        const ownedWeaponNames = weaponsResult.rows.map((r: any) => r.name);
+        const weapons = weaponsResult.rows;
+        const levels = levelsResult.rows;
 
         const result = calculateCombatPath({
             bossName,
@@ -187,8 +196,23 @@ app.post('/api/calculate-path', async (req, res) => {
                 weapon_secondary: usedLoadout.weapon_secondary,
                 charm: usedLoadout.charm
             } : null,
-            skills: skills.map((s: any) => ({ name: s.name, level: s.level })),
-            ownedWeaponNames,
+            skills: skills.map((s: any) => ({
+                name: s.name,
+                level: s.level,
+                maxLevel: s.max_level,
+                cost: s.cost || 1
+            })),
+            weapons: weapons.map((w: any) => ({
+                name: w.name,
+                owned: w.owned,
+                cost: w.cost || 0
+            })),
+            levels: levels.map((l: any) => ({
+                name: l.name,
+                status: l.status,
+                coinsCollected: l.coins_collected,
+                totalCoins: l.total_coins
+            }))
         });
 
         if (result) {

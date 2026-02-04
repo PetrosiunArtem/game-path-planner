@@ -24,6 +24,7 @@ export interface PathResult {
   attemptsEstimation: number;
   recommendedLoadoutId: string | null;
   steps: string[];
+  progressionTips?: string[];
   efficiencyScore: number;
   strategyLabel: string;
   aiAdvice: string;
@@ -39,6 +40,7 @@ export interface Weapon {
   type: string;
   damage: number;
   owned: boolean;
+  cost: number;
 }
 
 export interface Skill {
@@ -46,6 +48,7 @@ export interface Skill {
   name: string;
   level: number;
   maxLevel: number;
+  cost: number;
 }
 
 export interface Boss {
@@ -76,13 +79,13 @@ const API_BASE_URL = 'http://localhost:3000/api';
 // Fallback Data
 const fallbackProfile: ProfileData = {
   weapons: [
-    { id: 'w1', name: 'Peashooter', type: 'Standard', damage: 10, owned: true },
-    { id: 'w2', name: 'Spread', type: 'Spread', damage: 15, owned: false },
-    { id: 'w3', name: 'Chaser', type: 'Homing', damage: 8, owned: true },
+    { id: 'w1', name: 'Peashooter', type: 'Standard', damage: 10, owned: true, cost: 0 },
+    { id: 'w2', name: 'Spread', type: 'Spread', damage: 15, owned: false, cost: 4 },
+    { id: 'w3', name: 'Chaser', type: 'Homing', damage: 8, owned: true, cost: 4 },
   ],
   skills: [
-    { id: 's1', name: 'Health', level: 3, maxLevel: 5 },
-    { id: 's2', name: 'Super Meter', level: 2, maxLevel: 5 },
+    { id: 's1', name: 'Health', level: 3, maxLevel: 5, cost: 1 },
+    { id: 's2', name: 'Super Meter', level: 2, maxLevel: 5, cost: 1 },
   ],
   bosses: [
     { id: 'b1', name: 'The Root Pack', defeated: true, difficulty: 'Easy' },
