@@ -243,7 +243,7 @@ export { app };
 // Only listen if not in test mode
 if (process.env.NODE_ENV !== 'test') {
     // Serve index.html for any other requests (SPA support)
-    app.get('*', (_req, res) => {
+    app.get(/^(?!\/api).+/, (_req, res) => {
         res.sendFile(path.join(__dirname, '../dist/index.html'));
     });
 
