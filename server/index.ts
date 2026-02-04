@@ -3,15 +3,24 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import pool from './db.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateCombatPath } from './plannerLogic.js';
+import pool from './db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// Serve static files from the Vite build directory
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
 
 // Log all requests
 app.use((req, _res, next) => {
@@ -233,6 +242,11 @@ export { app };
 
 // Only listen if not in test mode
 if (process.env.NODE_ENV !== 'test') {
+    // Serve index.html for any other requests (SPA support)
+    app.get('*', (_req, res) => {
+        res.sendFile(path.join(__dirname, '../dist/index.html'));
+    });
+
     app.listen(port, () => {
         console.log(`Server running at http://localhost:${port}`);
     });
