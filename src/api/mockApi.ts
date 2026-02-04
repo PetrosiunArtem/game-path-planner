@@ -73,7 +73,8 @@ export interface ProfileData {
   levels: Level[];
 }
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
+const API_BASE_URL = isProd ? `${window.location.origin}/api` : 'http://localhost:3000/api';
 
 // API Service
 // Fallback Data
