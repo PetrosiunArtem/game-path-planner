@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Lightbulb, Info } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface StrategyAdvisorProps {
@@ -28,10 +28,10 @@ export const StrategyAdvisor: React.FC<StrategyAdvisorProps> = ({ advice, label,
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Tactical Assessment:</span>
                 <span
                   className={`text-xs font-black uppercase tracking-widest ${score > 0.7
-                      ? 'text-green-400'
-                      : score > 0.4
-                        ? 'text-yellow-400'
-                        : 'text-red-400'
+                    ? 'text-green-400'
+                    : score > 0.4
+                      ? 'text-yellow-400'
+                      : 'text-red-400'
                     }`}
                 >
                   {label}
@@ -66,10 +66,7 @@ export const StrategyAdvisor: React.FC<StrategyAdvisorProps> = ({ advice, label,
         </Card>
       )}
 
-      <div className="flex items-center gap-2 text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em] bg-background/30 p-3 rounded-xl border border-border/50">
-        <Info className="w-3.5 h-3.5 text-primary/60" />
-        Neural Simulation verified through weighted multiplicative risk reduction matrix.
-      </div>
+
     </motion.div>
   );
 };
