@@ -96,15 +96,15 @@ export const PathPlanner: React.FC = () => {
             Advanced probability simulation for Inkwell Isle boss encounters.
           </CardDescription>
         </div>
-        <CardContent className="p-8 space-y-8">
-          <div className="grid md:grid-cols-2 gap-10">
+        <CardContent className="p-4 md:p-8 space-y-6 md:space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
             <div className="space-y-3">
               <label className="text-xs font-black uppercase tracking-[0.2em] text-primary/80 ml-1">
                 Target Debtor
               </label>
               <Select value={selectedBoss} onValueChange={setSelectedBoss}>
                 <SelectTrigger className="bg-background border-border h-16 rounded-2xl focus:ring-primary/20 transition-all px-5 shadow-inner">
-                  <div className="flex flex-col items-start gap-0.5">
+                  <div className="flex flex-col items-start gap-0.5 w-full">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider">Target Selected</span>
                     <SelectValue placeholder="Identify Boss" />
                   </div>
@@ -117,11 +117,11 @@ export const PathPlanner: React.FC = () => {
                         value={boss.name}
                         className="rounded-xl focus:bg-primary/10 focus:text-primary transition-all py-4 px-4 my-1 mx-1 border border-transparent focus:border-primary/20"
                       >
-                        <div className="flex items-center justify-between w-full gap-8">
-                          <span className="font-bold text-base">{boss.name}</span>
+                        <div className="flex items-center justify-between w-full gap-4 md:gap-8">
+                          <span className="font-bold text-sm md:text-base truncate">{boss.name}</span>
                           <Badge
                             variant="outline"
-                            className={`text-[9px] uppercase font-black px-2.5 py-0.5 border-2 ${getDifficultyColor(boss.difficulty)}`}
+                            className={`text-[9px] uppercase font-black px-2.5 py-0.5 border-2 whitespace-nowrap ${getDifficultyColor(boss.difficulty)}`}
                           >
                             {boss.difficulty}
                           </Badge>
@@ -144,7 +144,7 @@ export const PathPlanner: React.FC = () => {
               </label>
               <Select value={selectedLoadoutId} onValueChange={setSelectedLoadoutId}>
                 <SelectTrigger className="bg-background border-border h-16 rounded-2xl focus:ring-primary/20 transition-all px-5 shadow-inner text-left">
-                  <div className="flex flex-col items-start gap-0.5 overflow-hidden">
+                  <div className="flex flex-col items-start gap-0.5 overflow-hidden w-full">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider text-left">Active Loadout</span>
                     <div className="truncate w-full font-bold">
                       {loadoutsState.items.find(l => l.id === selectedLoadoutId)?.name || 'Resource Selection'}
@@ -158,13 +158,13 @@ export const PathPlanner: React.FC = () => {
                       value={l.id}
                       className="rounded-xl focus:bg-primary/10 focus:text-primary transition-all py-3 px-4 my-1 mx-1 border border-transparent focus:border-primary/20"
                     >
-                      <div className="flex flex-col gap-1.5">
-                        <span className="font-black text-base tracking-tight">{l.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold uppercase">
+                      <div className="flex flex-col gap-1.5 w-full">
+                        <span className="font-black text-sm md:text-base tracking-tight truncate">{l.name}</span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold uppercase whitespace-nowrap">
                             {l.weaponPrimary}
                           </span>
-                          <span className="text-[10px] text-muted-foreground/80 font-bold uppercase tracking-tighter">
+                          <span className="text-[10px] text-muted-foreground/80 font-bold uppercase tracking-tighter truncate">
                             {l.charm}
                           </span>
                         </div>
@@ -179,7 +179,7 @@ export const PathPlanner: React.FC = () => {
           <Button
             onClick={handleCalculate}
             disabled={!selectedLoadoutId || plannerState.status === 'loading' || isSimulating}
-            className="w-full bg-primary hover:bg-primary/90 text-white rounded-2xl h-16 text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+            className="w-full bg-primary hover:bg-primary/90 text-white rounded-2xl h-14 md:h-16 text-base md:text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
           >
             {isSimulating ? (
               <div className="flex items-center gap-3">

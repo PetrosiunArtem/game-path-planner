@@ -63,7 +63,7 @@ app.put('/api/loadouts/:id', async (req, res) => {
     }
 });
 
-app.get('/api/profile', async (req, res) => {
+app.get('/api/profile', async (_req, res) => {
     try {
         const weapons = await pool.query('SELECT * FROM weapons');
         const skills = await pool.query('SELECT * FROM skills');
@@ -120,7 +120,7 @@ app.put('/api/profile', async (req, res) => {
 });
 
 // Logs
-app.get('/api/logs', async (req, res) => {
+app.get('/api/logs', async (_req, res) => {
     try {
         const result = await pool.query('SELECT * FROM logs ORDER BY date DESC, id DESC');
         res.json(result.rows);

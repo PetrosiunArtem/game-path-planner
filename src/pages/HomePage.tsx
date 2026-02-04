@@ -49,28 +49,28 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 via-background to-background border border-primary/10 p-12">
+    <div className="space-y-6 md:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-10">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 via-background to-background border border-primary/10 p-6 md:p-12">
         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <Target className="w-64 h-64 text-primary" />
+          <Target className="w-32 h-32 md:w-64 md:h-64 text-primary" />
         </div>
 
         <div className="relative z-10 max-w-2xl">
           <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors mb-6">
             v2.0 Beta
           </Badge>
-          <h2 className="text-5xl font-extrabold text-foreground mb-4 tracking-tight leading-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-foreground mb-4 tracking-tight leading-tight">
             Your Ultimate Companion for the <span className="text-primary">Inkwell Isle</span> Adventure.
           </h2>
-          <p className="text-lg text-muted-foreground mb-10 leading-relaxed font-medium">
-            Plan your path to victory, simulate legendary boss battles, and perfect your arsenal 
+          <p className="text-base md:text-lg text-muted-foreground mb-8 md:mb-10 leading-relaxed font-medium">
+            Plan your path to victory, simulate legendary boss battles, and perfect your arsenal
             to overcome every challenge on your journey with ease and style.
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button
               size="lg"
-              className="rounded-full px-8 h-12 bg-primary hover:bg-primary/90 shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+              className="rounded-full px-8 h-12 bg-primary hover:bg-primary/90 shadow-[0_0_20px_rgba(220,38,38,0.3)] w-full sm:w-auto"
               asChild
             >
               <Link to="/planner">Simulate Battle</Link>
@@ -78,7 +78,7 @@ const HomePage: React.FC = () => {
             <Button
               size="lg"
               variant="outline"
-              className="rounded-full px-8 h-12 border-border"
+              className="rounded-full px-8 h-12 border-border w-full sm:w-auto"
               asChild
             >
               <Link to="/profile">Manage Arsenal</Link>
@@ -87,7 +87,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {stats.map((stat, i) => (
           <div
             key={i}

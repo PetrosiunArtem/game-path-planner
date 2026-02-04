@@ -7,6 +7,7 @@ import profileReducer, {
     toggleBoss,
     cycleLevelStatus,
 } from './profileSlice';
+import { RootState } from '../../app/store';
 
 // Mock the API
 jest.mock('../../api/mockApi', () => ({
@@ -33,7 +34,7 @@ describe('profileSlice Async Thunks', () => {
         store = configureStore({
             reducer: {
                 profile: profileReducer,
-            },
+            } as any, // Cast to any to avoid recursive type issues in test setup with partial reducers
         });
         jest.clearAllMocks();
     });
@@ -41,9 +42,9 @@ describe('profileSlice Async Thunks', () => {
     it('should handle fetchProfile', async () => {
         (api.getProfile as jest.Mock).mockResolvedValue(mockProfile);
 
-        await store.dispatch(fetchProfile());
+        await store.dispatch(fetchProfile() as any);
 
-        const state = store.getState().profile;
+        const state = (store.getState() as RootState).profile;
         expect(state.status).toBe('succeeded');
         expect(state.weapons).toEqual(mockProfile.weapons);
         expect(state.skills).toEqual(mockProfile.skills);
@@ -52,7 +53,7 @@ describe('profileSlice Async Thunks', () => {
     it('should handle toggleWeapon', async () => {
         // Setup initial state
         (api.getProfile as jest.Mock).mockResolvedValue(mockProfile);
-        await store.dispatch(fetchProfile());
+        await store.dispatch(fetchProfile() as any);
 
         const updatedProfile = {
             ...mockProfile,
@@ -63,16 +64,16 @@ describe('profileSlice Async Thunks', () => {
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
-        await store.dispatch(toggleWeapon('2'));
+        await store.dispatch(toggleWeapon('2') as any);
 
-        const state = store.getState().profile;
+        const state = (store.getState() as RootState).profile;
         expect(api.updateProfile).toHaveBeenCalled();
         expect(state.weapons[1].owned).toBe(true);
     });
 
     it('should handle updateSkillLevel', async () => {
         (api.getProfile as jest.Mock).mockResolvedValue(mockProfile);
-        await store.dispatch(fetchProfile());
+        await store.dispatch(fetchProfile() as any);
 
         const updatedProfile = {
             ...mockProfile,
@@ -80,15 +81,15 @@ describe('profileSlice Async Thunks', () => {
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
-        await store.dispatch(updateSkillLevel({ id: '1', delta: 1 }));
+        await store.dispatch(updateSkillLevel({ id: '1', delta: 1 }) as any);
 
-        const state = store.getState().profile;
+        const state = (store.getState() as RootState).profile;
         expect(state.skills[0].level).toBe(6);
     });
 
     it('should handle toggleBoss', async () => {
         (api.getProfile as jest.Mock).mockResolvedValue(mockProfile);
-        await store.dispatch(fetchProfile());
+        await store.dispatch(fetchProfile() as any);
 
         const updatedProfile = {
             ...mockProfile,
@@ -96,15 +97,15 @@ describe('profileSlice Async Thunks', () => {
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
-        await store.dispatch(toggleBoss('1'));
+        await store.dispatch(toggleBoss('1') as any);
 
-        const state = store.getState().profile;
+        const state = (store.getState() as RootState).profile;
         expect(state.bosses[0].defeated).toBe(true);
     });
 
     it('should handle cycleLevelStatus', async () => {
         (api.getProfile as jest.Mock).mockResolvedValue(mockProfile);
-        await store.dispatch(fetchProfile());
+        await store.dispatch(fetchProfile() as any);
 
         const updatedProfile = {
             ...mockProfile,
@@ -112,9 +113,9 @@ describe('profileSlice Async Thunks', () => {
         };
         (api.updateProfile as jest.Mock).mockResolvedValue(updatedProfile);
 
-        await store.dispatch(cycleLevelStatus('1'));
+        await store.dispatch(cycleLevelStatus('1') as any);
 
-        const state = store.getState().profile;
+        const state = (store.getState() as RootState).profile;
         expect(state.levels[0].status).toBe('available');
     });
 });
